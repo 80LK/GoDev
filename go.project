@@ -1,0 +1,7 @@
+
+project (
+	name godev
+	version 0.1.0
+	module github.com/80LK/godev
+	author 80LK
+)
