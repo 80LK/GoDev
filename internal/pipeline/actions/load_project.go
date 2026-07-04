@@ -65,7 +65,6 @@ func (a LoadProject) Plan(
 				return nil, err
 			}
 		}
-
 	}
 
 	if ctx.Project == nil {

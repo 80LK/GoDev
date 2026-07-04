@@ -2,31 +2,31 @@ package actions
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/80LK/godev/internal/pipeline"
-	"github.com/80LK/godev/internal/utils"
 )
 
 type CheckNotExists struct {
-	Path string
+	Path  string
+	Error string
 }
 
 func (a CheckNotExists) Plan(
 	ctx *pipeline.Context,
 ) ([]pipeline.Patch, error) {
+	if a.Error == "" {
+		a.Error = "%s already exists"
+	}
 
-	ok, err := utils.ExsistFile(a.Path)
+	_, err := os.Stat(a.Path)
+
 	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil
+		}
 		return nil, err
 	}
 
-	if ok {
-		return nil,
-			fmt.Errorf(
-				"%s already exists",
-				a.Path,
-			)
-	}
-
-	return nil, nil
+	return nil, fmt.Errorf(a.Error, a.Path)
 }

@@ -5,17 +5,13 @@ import (
 )
 
 type Pipeline struct {
-	Actions []Action
+	actions []Action
 }
 
-type Action interface {
-	Plan(*Context) ([]Patch, error)
-}
-
-type Patch interface {
-	Apply() error
-	Diff() (string, error)
-	Summary() string
+func New() *Pipeline {
+	return &Pipeline{
+		actions: make([]Action, 0, 4),
+	}
 }
 
 func (p Pipeline) Plan(
@@ -24,7 +20,7 @@ func (p Pipeline) Plan(
 
 	var patches []Patch
 
-	for _, action := range p.Actions {
+	for _, action := range p.actions {
 
 		actionPatches, err := action.Plan(ctx)
 		if err != nil {
@@ -40,7 +36,12 @@ func (p Pipeline) Plan(
 	return patches, nil
 }
 
-func Execute(ctx *Context, p *Pipeline) error {
+func (p *Pipeline) Add(actions ...Action) *Pipeline {
+	p.actions = append(p.actions, actions...)
+	return p
+}
+
+func (p *Pipeline) Execute(ctx *Context) error {
 	patches, err := p.Plan(ctx)
 	if err != nil {
 		return err
@@ -90,4 +91,14 @@ func apply(
 	}
 
 	return nil
+}
+
+type Action interface {
+	Plan(*Context) ([]Patch, error)
+}
+
+type Patch interface {
+	Apply() error
+	Diff() (string, error)
+	Summary() string
 }

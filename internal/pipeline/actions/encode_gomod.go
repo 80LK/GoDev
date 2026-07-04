@@ -2,14 +2,16 @@ package actions
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/80LK/godev/internal/pipeline"
+	"github.com/80LK/godev/internal/pipeline/patches"
+	"github.com/80LK/godev/internal/project"
 
 	"golang.org/x/mod/modfile"
 )
 
 type EncodeGoMod struct {
-	OutputKey string
 }
 
 func (a EncodeGoMod) Plan(
@@ -40,11 +42,15 @@ func (a EncodeGoMod) Plan(
 		return nil, err
 	}
 
-	pipeline.Set(
-		ctx,
-		a.OutputKey,
-		data,
-	)
+	path := project.GetGoModFile(ctx.ProjectDir)
+	oldData, _ := os.ReadFile(path)
 
-	return nil, nil
+	return []pipeline.Patch{
+		patches.WriteFilePatch{
+			Path:    path,
+			OldData: oldData,
+			NewData: data,
+			Perm:    0666,
+		},
+	}, nil
 }

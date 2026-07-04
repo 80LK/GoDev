@@ -3,7 +3,7 @@ package utils
 import (
 	"os"
 
-	"github.com/80LK/godev/errors"
+	"github.com/80LK/godev/internal/errors"
 )
 
 func ExsistFile(path string) (bool, error) {
@@ -19,7 +19,7 @@ func ExsistFile(path string) (bool, error) {
 	if stat.Mode().IsRegular() {
 		return true, nil
 	} else {
-		return false, errors.ErrNotFile
+		return false, errors.ErrNotFile(path)
 	}
 }
 
@@ -35,6 +35,6 @@ func ExsistDir(path string) (bool, error) {
 	if stat.Mode().IsDir() {
 		return true, nil
 	} else {
-		return false, errors.ErrNotFile
+		return false, errors.ErrNotDir(path)
 	}
 }
