@@ -8,8 +8,8 @@ var dryRun bool
 
 var Root = &cobra.Command{
 	Use:   "god",
-	Short: "short desc",
-	Long:  "long desc",
+	Short: "GoDev (god) - Devtool for golang projects",
+	Long:  "GoDev (god) - Devtool for golang projects",
 }
 
 func init() {
