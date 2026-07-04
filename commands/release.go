@@ -6,15 +6,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var versionCmd = &cobra.Command{
-	Use:   "version",
+var releaseCmd = &cobra.Command{
+	Use:   "release",
 	Short: "short desc",
 	Long:  "long desc",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return fmt.Errorf("god version not implemented")
+		return fmt.Errorf("god release not implemented")
 	},
 }
 
 func init() {
-	Root.AddCommand(versionCmd)
+	Root.AddCommand(releaseCmd)
 }
