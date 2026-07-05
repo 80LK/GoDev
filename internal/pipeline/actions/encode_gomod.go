@@ -7,8 +7,6 @@ import (
 	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/patches"
 	"github.com/80LK/godev/internal/project"
-
-	"golang.org/x/mod/modfile"
 )
 
 type EncodeGoMod struct {
@@ -18,26 +16,14 @@ func (a EncodeGoMod) Plan(
 	ctx *pipeline.Context,
 ) ([]pipeline.Patch, error) {
 
-	if ctx.Project == nil {
+	if ctx.Mod == nil {
 		return nil,
 			fmt.Errorf(
 				"project not found in context",
 			)
 	}
 
-	mod := &modfile.File{}
-
-	err := mod.AddModuleStmt(ctx.Project.Project.Module)
-	if err != nil {
-		return nil, err
-	}
-
-	err = mod.AddGoStmt(ctx.GoVer.StringWithoutSuffix())
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := mod.Format()
+	data, err := ctx.Mod.Format()
 	if err != nil {
 		return nil, err
 	}

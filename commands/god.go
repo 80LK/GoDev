@@ -13,5 +13,5 @@ var Root = &cobra.Command{
 }
 
 func init() {
-	Root.PersistentFlags().BoolVarP(&dryRun, "dry-run", "n", false, "Run command without making any changes")
+	Root.PersistentFlags().BoolVarP(&dryRun, "dry-run", "n", false, "run command without making any changes")
 }

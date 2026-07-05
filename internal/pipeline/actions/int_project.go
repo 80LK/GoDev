@@ -5,23 +5,20 @@ import (
 	"github.com/80LK/godev/internal/project"
 )
 
-type InitProject struct {
-	ModuleName string
-}
+type IntProject struct{}
 
-func (f InitProject) Plan(ctx *pipeline.Context) ([]pipeline.Patch, error) {
-	if ctx.Project != nil {
-		return nil, nil
+func (i IntProject) Plan(ctx *pipeline.Context) ([]pipeline.Patch, error) {
+
+	if ctx.Project == nil {
+		ctx.Project = project.New()
 	}
 
-	ctx.Project = project.New()
-	if err := project.ParseFromGoModuleNameIn(f.ModuleName, ctx.Project); err != nil {
+	if err := project.ParseFromGoModIn(ctx.Mod, ctx.Project); err != nil {
 		return nil, err
 	}
 
 	if ctx.Project.Project.Version.Major == 0 && ctx.Project.Project.Version.Minor == 0 && ctx.Project.Project.Version.Patch == 0 {
 		ctx.Project.Project.Version.Minor = 1
 	}
-
 	return nil, nil
 }

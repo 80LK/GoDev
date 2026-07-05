@@ -5,15 +5,15 @@ import (
 
 	"github.com/80LK/godev/internal/project"
 	"github.com/80LK/godev/internal/version"
+	"golang.org/x/mod/modfile"
 )
 
 type Context struct {
 	DryRun     bool
 	ProjectDir string
-	Project    *project.GoProject
 
-	HasGoProject bool
-	HasGoMod     bool
+	Project *project.GoProject
+	Mod     *modfile.File
 
 	GoVer *version.Version
 
@@ -31,11 +31,9 @@ func NewContext(dryRun bool) *Context {
 	}
 
 	return &Context{
-		DryRun:       dryRun,
-		HasGoProject: false,
-		HasGoMod:     false,
-		GoVer:        ver,
-		values:       make(map[string]any),
+		DryRun: dryRun,
+		GoVer:  ver,
+		values: make(map[string]any),
 	}
 }
 

@@ -11,12 +11,11 @@ import (
 	"golang.org/x/mod/modfile"
 )
 
-type LoadProject struct{}
+type InitProjectContext struct{}
 
-func (a LoadProject) Plan(
+func (a InitProjectContext) Plan(
 	ctx *pipeline.Context,
 ) ([]pipeline.Patch, error) {
-
 	goProjectFile := project.GetGoProjectFile(ctx.ProjectDir)
 	exsist, err := utils.ExsistFile(goProjectFile)
 	if err != nil {
@@ -24,7 +23,6 @@ func (a LoadProject) Plan(
 	}
 
 	if exsist {
-		ctx.HasGoProject = true
 		data, err := os.ReadFile(goProjectFile)
 		if err != nil {
 			return nil, err
@@ -34,7 +32,7 @@ func (a LoadProject) Plan(
 			return nil, err
 		}
 
-		ctx.Project, err = project.Parse(doc)
+		err = project.ParseIn(doc, ctx.Project)
 		if err != nil {
 			return nil, err
 		}
@@ -47,33 +45,15 @@ func (a LoadProject) Plan(
 	}
 
 	if exsist {
-		ctx.HasGoMod = true
-
-		if !ctx.HasGoProject {
-			data, err := os.ReadFile(goModPath)
-			if err != nil {
-				return nil, err
-			}
-
-			file, err := modfile.Parse(goModPath, data, nil)
-			if err != nil {
-				return nil, err
-			}
-
-			ctx.Project, err = project.ParseFromGoMod(file)
-			if err != nil {
-				return nil, err
-			}
+		data, err := os.ReadFile(goModPath)
+		if err != nil {
+			return nil, err
 		}
-	}
 
-	if ctx.Project == nil {
-		ctx.Project = &project.GoProject{
-			Project: &project.ProjectInfo{},
+		ctx.Mod, err = modfile.Parse(goModPath, data, nil)
+		if err != nil {
+			return nil, err
 		}
-	}
-
-	if ctx.Project.Project.Name == "" {
 	}
 
 	return nil, nil

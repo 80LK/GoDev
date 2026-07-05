@@ -26,7 +26,7 @@ func createApp(ctx *pipeline.Context) ([]pipeline.Patch, error) {
 	return pipeline.New().Add(
 		EnsureDir{Path: filepath.Join(ctx.ProjectDir, "cmd"), Perm: 0666},
 		EnsureDir{Path: filepath.Join(ctx.ProjectDir, "cmd", ctx.Project.Project.Name), Perm: 0666},
-		WriteFile{Path: filepath.Join(ctx.ProjectDir, "cmd", ctx.Project.Project.Name, "main.go"), Perm: 0777, Value: []byte("package main\n\nfunc main(){\n}\n")},
+		WriteFile{Path: filepath.Join(ctx.ProjectDir, "cmd", ctx.Project.Project.Name, ctx.Project.Project.Name+".go"), Perm: 0777, Value: []byte("package main\n\nfunc main(){\n}\n")},
 
 		EnsureDir{Path: filepath.Join(ctx.ProjectDir, "internal"), Perm: 0666},
 		EncodeGoProject{},
