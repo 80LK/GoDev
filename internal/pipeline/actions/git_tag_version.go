@@ -12,6 +12,7 @@ type GitTagVersion struct{}
 
 func (g GitTagVersion) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 	tag := ctx.GoProject.Project.Version.String()
+
 	cmd := exec.Command("git", "rev-parse", "-q", "--verify", "refs/tags/"+tag)
 	cmd.Dir = ctx.ProjectDir
 	if err := cmd.Run(); err != nil {
