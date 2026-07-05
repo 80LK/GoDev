@@ -72,6 +72,7 @@ func dryRun(
 		}
 
 		fmt.Printf("%d. %s\n", i, sum)
+		i++
 		if diff != "" {
 			fmt.Println(diff)
 		}
