@@ -1,4 +1,4 @@
-package pipeline
+package context
 
 import (
 	"os"
@@ -21,7 +21,7 @@ type Context struct {
 	values map[string]any
 }
 
-func NewContext(dryRun bool) *Context {
+func New(dryRun bool) *Context {
 	out, err := exec.Command("go", "env", "GOVERSION").Output()
 	if err != nil {
 		panic(err)

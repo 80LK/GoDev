@@ -6,6 +6,7 @@ import (
 
 	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/actions"
+	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/project"
 
 	"github.com/spf13/cobra"
@@ -23,7 +24,7 @@ Args:
                 	In this case, the module name is derived from the directory name`,
 	Args: cobra.RangeArgs(1, 2),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		ctx := pipeline.NewContext(dryRun)
+		ctx := context.New(dryRun)
 
 		moduleName := args[0]
 		template, err := cmd.Flags().GetString(_TEMPLATE_FLAG)

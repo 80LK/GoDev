@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/80LK/godev/internal/pipeline/context"
+
 	"github.com/80LK/godev/internal/pipeline"
 )
 
@@ -13,7 +15,7 @@ type CheckNotExists struct {
 }
 
 func (a CheckNotExists) Plan(
-	ctx *pipeline.Context,
+	ctx *context.Context,
 ) ([]pipeline.Patch, error) {
 	if a.Error == "" {
 		a.Error = "%s already exists"

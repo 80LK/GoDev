@@ -5,6 +5,7 @@ import (
 
 	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/actions"
+	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/project"
 	"github.com/spf13/cobra"
 )
@@ -32,7 +33,7 @@ Args:
 			return err
 		}
 
-		ctx := pipeline.NewContext(dryRun)
+		ctx := context.New(dryRun)
 		pl := pipeline.New().Add(
 			actions.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
 			actions.InitProjectContext{},
@@ -42,7 +43,10 @@ Args:
 			pl.Add(actions.VersionSetPre{Value: pre})
 		}
 
-		pl.Add(actions.EncodeGoProject{})
+		pl.Add(
+			actions.EncodeGoProject{},
+			actions.PatchSources{},
+		)
 
 		return pl.Execute(ctx)
 	},
@@ -61,13 +65,14 @@ Args:
 			return errors.New("Expose pre-release tag")
 		}
 
-		ctx := pipeline.NewContext(dryRun)
+		ctx := context.New(dryRun)
 
 		return pipeline.New().Add(
 			actions.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
 			actions.InitProjectContext{},
 			actions.VersionSetPre{Value: args[0]},
 			actions.EncodeGoProject{},
+			actions.PatchSources{},
 		).Execute(ctx)
 	},
 }
@@ -85,13 +90,14 @@ Args:
 			return errors.New("Expose version")
 		}
 
-		ctx := pipeline.NewContext(dryRun)
+		ctx := context.New(dryRun)
 
 		return pipeline.New().Add(
 			actions.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
 			actions.InitProjectContext{},
 			actions.VersionSet{Value: args[0]},
 			actions.EncodeGoProject{},
+			actions.PatchSources{},
 		).Execute(ctx)
 	},
 }

@@ -2,6 +2,8 @@ package pipeline
 
 import (
 	"fmt"
+
+	"github.com/80LK/godev/internal/pipeline/context"
 )
 
 type Pipeline struct {
@@ -15,7 +17,7 @@ func New() *Pipeline {
 }
 
 func (p Pipeline) Plan(
-	ctx *Context,
+	ctx *context.Context,
 ) ([]Patch, error) {
 
 	var patches []Patch
@@ -41,7 +43,7 @@ func (p *Pipeline) Add(actions ...Action) *Pipeline {
 	return p
 }
 
-func (p *Pipeline) Execute(ctx *Context) error {
+func (p *Pipeline) Execute(ctx *context.Context) error {
 	patches, err := p.Plan(ctx)
 	if err != nil {
 		return err
@@ -86,7 +88,7 @@ func apply(
 }
 
 type Action interface {
-	Plan(*Context) ([]Patch, error)
+	Plan(*context.Context) ([]Patch, error)
 }
 
 type Patch interface {

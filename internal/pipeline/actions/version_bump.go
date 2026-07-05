@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/80LK/godev/internal/pipeline/context"
+
 	"github.com/80LK/godev/internal/pipeline"
 )
 
@@ -38,10 +40,12 @@ type VersionBump struct {
 	Value Bump
 }
 
-func (v VersionBump) Plan(ctx *pipeline.Context) ([]pipeline.Patch, error) {
+func (v VersionBump) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 	if v.Value == "" {
 		return nil, ErrBump
 	}
+
+	context.Set(ctx, _OLD_VERSION_CONTEXT_KEY, ctx.GoProject.Project.Version.Clone())
 
 	switch v.Value {
 	case BUMP_PATCH:

@@ -3,6 +3,7 @@ package commands
 import (
 	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/actions"
+	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/project"
 	"github.com/spf13/cobra"
 )
@@ -13,7 +14,7 @@ var intCmd = &cobra.Command{
 	Short:   "Integrate tool in exsist project",
 	Long:    "Integrate tool in exsist project",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		ctx := pipeline.NewContext(dryRun)
+		ctx := context.New(dryRun)
 
 		author, err := cmd.Flags().GetString(_AUTHOR_FLAG)
 		if err != nil {

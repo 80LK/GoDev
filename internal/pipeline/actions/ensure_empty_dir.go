@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/80LK/godev/internal/pipeline/context"
+
 	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/patches"
 	"github.com/80LK/godev/internal/utils"
@@ -15,7 +17,7 @@ type EnsureEmptyDir struct {
 }
 
 func (a EnsureEmptyDir) Plan(
-	ctx *pipeline.Context,
+	ctx *context.Context,
 ) ([]pipeline.Patch, error) {
 
 	ok, err := utils.ExsistDir(a.Path)

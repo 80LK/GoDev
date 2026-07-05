@@ -3,6 +3,8 @@ package actions
 import (
 	"fmt"
 
+	"github.com/80LK/godev/internal/pipeline/context"
+
 	"github.com/80LK/godev/internal/pipeline"
 	"golang.org/x/mod/modfile"
 )
@@ -12,7 +14,7 @@ type InitMod struct{}
 const TOOL_PATH = "github.com/80LK/godev/cmd/god"
 const TOOL_VERSION = "v0.0.0"
 
-func (f InitMod) Plan(ctx *pipeline.Context) ([]pipeline.Patch, error) {
+func (f InitMod) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 	if ctx.GoProject == nil {
 		return nil, fmt.Errorf("project not found")
 	}

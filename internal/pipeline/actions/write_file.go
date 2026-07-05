@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/80LK/godev/internal/pipeline/context"
+
 	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/patches"
 )
@@ -18,7 +20,7 @@ type WriteFile struct {
 }
 
 func (a WriteFile) Plan(
-	ctx *pipeline.Context,
+	ctx *context.Context,
 ) ([]pipeline.Patch, error) {
 
 	if a.Value == nil && a.InputKey == "" {
@@ -28,7 +30,7 @@ func (a WriteFile) Plan(
 	var data []byte
 	if a.InputKey != "" {
 		var ok bool
-		if data, ok = pipeline.Get[[]byte](
+		if data, ok = context.Get[[]byte](
 			ctx,
 			a.InputKey,
 		); !ok {

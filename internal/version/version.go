@@ -11,18 +11,19 @@ import (
 
 type Version struct {
 	Major, Minor, Patch uint
-	PreRelease          []string
+	PreRelease          string
 	Meta                string
 }
 
-func (v *Version) SetPreRelease(pre string) {
-	v.PreRelease = strings.Split(pre, ".")
+func (v *Version) Clone() *Version {
+	_v := &Version{}
+	_v.Major = v.Major
+	_v.Minor = v.Minor
+	_v.Patch = v.Patch
+	_v.Patch = v.Patch
+	_v.Meta = v.Meta
+	return _v
 }
-
-func (v *Version) GetPreRelease() string {
-	return strings.Join(v.PreRelease, ".")
-}
-
 func (v *Version) String() string {
 	var str strings.Builder
 
@@ -41,14 +42,9 @@ func (v *Version) StringWithoutSuffix() string {
 	str.WriteString(strconv.FormatUint(uint64(v.Minor), 10))
 	str.WriteRune('.')
 	str.WriteString(strconv.FormatUint(uint64(v.Patch), 10))
-
-	for i, s := range v.PreRelease {
-		if i == 0 {
-			str.WriteRune('-')
-		} else {
-			str.WriteRune('.')
-		}
-		str.WriteString(s)
+	if v.PreRelease != "" {
+		str.WriteRune('-')
+		str.WriteString(v.PreRelease)
 	}
 
 	if v.Meta != "" {
@@ -74,7 +70,7 @@ func (v *Version) Compare(v2 *Version) int {
 		return compared
 	}
 
-	return comparePreRelease(v.PreRelease, v2.PreRelease)
+	return comparePreRelease(strings.Split(v.PreRelease, "."), strings.Split(v2.PreRelease, "."))
 }
 
 func (v *Version) Equal(other *Version) bool {

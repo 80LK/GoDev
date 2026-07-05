@@ -34,7 +34,7 @@ func Parse(s string) (*Version, error) {
 
 	core, pre, hasPre := strings.Cut(main, "-")
 	if hasPre {
-		v.PreRelease = strings.Split(pre, ".")
+		v.PreRelease = pre
 	}
 
 	parts := strings.Split(core, ".")
