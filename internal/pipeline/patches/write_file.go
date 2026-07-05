@@ -14,9 +14,28 @@ type WriteFilePatch struct {
 	NewData []byte
 
 	Perm os.FileMode
+
+	validated bool
+}
+
+func (p *WriteFilePatch) validate() {
+	if p.validated {
+		return
+	}
+	hasCRLF := bytes.Contains(p.OldData, []byte("\r\n"))
+
+	if hasCRLF {
+		p.NewData = bytes.ReplaceAll(
+			p.NewData,
+			[]byte("\n"),
+			[]byte("\r\n"),
+		)
+	}
+	p.validated = true
 }
 
 func (p WriteFilePatch) Apply() error {
+	p.validate()
 	return os.WriteFile(
 		p.Path,
 		p.NewData,
@@ -24,6 +43,7 @@ func (p WriteFilePatch) Apply() error {
 	)
 }
 func (p WriteFilePatch) Diff() (string, error) {
+	p.validate()
 	diff := difflib.UnifiedDiff{
 		A: difflib.SplitLines(string(p.OldData)),
 		B: difflib.SplitLines(string(p.NewData)),
@@ -37,6 +57,7 @@ func (p WriteFilePatch) Diff() (string, error) {
 	return difflib.GetUnifiedDiffString(diff)
 }
 func (p WriteFilePatch) Summary() string {
+	p.validate()
 	switch {
 	case len(p.OldData) == 0:
 		return "create file " + p.Path
