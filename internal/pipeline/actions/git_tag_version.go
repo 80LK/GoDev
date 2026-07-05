@@ -1,6 +1,8 @@
 package actions
 
 import (
+	"errors"
+	"fmt"
 	"os/exec"
 
 	"github.com/80LK/godev/internal/pipeline"
@@ -15,21 +17,29 @@ func (g GitTagVersion) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 
 	cmd := exec.Command("git", "rev-parse", "-q", "--verify", "refs/tags/"+tag)
 	cmd.Dir = ctx.ProjectDir
-	if err := cmd.Run(); err != nil {
-		return nil, err
+	err := cmd.Run()
+	if err == nil {
+		return nil, fmt.Errorf("tag already exsist. change version")
 	}
 
-	return []pipeline.Patch{
-		patches.ShellPatch{
-			Command: "git",
-			Args: []string{
-				"tag",
-				"-a",
-				tag,
-				"-m",
-				"Release " + tag,
-			},
-			WorkDir: ctx.ProjectDir,
-		},
-	}, nil
+	_e, ok := errors.AsType[*exec.ExitError](err)
+	if ok {
+		if _e.ExitCode() == 1 {
+			return []pipeline.Patch{
+				patches.ShellPatch{
+					Command: "git",
+					Args: []string{
+						"tag",
+						"-a",
+						tag,
+						"-m",
+						"Release " + tag,
+					},
+					WorkDir: ctx.ProjectDir,
+				},
+			}, nil
+		}
+	}
+
+	return nil, err
 }
