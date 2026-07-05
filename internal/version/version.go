@@ -15,6 +15,14 @@ type Version struct {
 	Meta                string
 }
 
+func (v *Version) SetPreRelease(pre string) {
+	v.PreRelease = strings.Split(pre, ".")
+}
+
+func (v *Version) GetPreRelease() string {
+	return strings.Join(v.PreRelease, ".")
+}
+
 func (v *Version) String() string {
 	var str strings.Builder
 
@@ -44,7 +52,7 @@ func (v *Version) StringWithoutSuffix() string {
 	}
 
 	if v.Meta != "" {
-		str.WriteRune('.')
+		str.WriteRune('+')
 		str.WriteString(v.Meta)
 	}
 	return str.String()
