@@ -18,7 +18,7 @@ func (a EncodeGoProject) Plan(
 	ctx *pipeline.Context,
 ) ([]pipeline.Patch, error) {
 
-	if ctx.Project == nil {
+	if ctx.GoProject == nil {
 		return nil,
 			fmt.Errorf(
 				"project not found in context",
@@ -27,7 +27,7 @@ func (a EncodeGoProject) Plan(
 
 	doc := modlike.New()
 
-	err := doc.Encode(ctx.Project)
+	err := doc.Encode(ctx.GoProject)
 	if err != nil {
 		return nil, err
 	}

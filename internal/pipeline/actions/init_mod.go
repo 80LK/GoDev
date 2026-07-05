@@ -13,7 +13,7 @@ const TOOL_PATH = "github.com/80LK/godev/cmd/god"
 const TOOL_VERSION = "v0.0.0"
 
 func (f InitMod) Plan(ctx *pipeline.Context) ([]pipeline.Patch, error) {
-	if ctx.Project == nil {
+	if ctx.GoProject == nil {
 		return nil, fmt.Errorf("project not found")
 	}
 
@@ -22,7 +22,7 @@ func (f InitMod) Plan(ctx *pipeline.Context) ([]pipeline.Patch, error) {
 	}
 
 	ctx.Mod = new(modfile.File)
-	ctx.Mod.AddModuleStmt(ctx.Project.Project.GetGoModStmt())
+	ctx.Mod.AddModuleStmt(ctx.GoProject.Project.GetGoModStmt())
 	ctx.Mod.AddGoStmt(ctx.GoVer.StringWithoutSuffix())
 	ctx.Mod.AddNewRequire(TOOL_PATH, TOOL_VERSION, true)
 	ctx.Mod.AddTool(TOOL_PATH)

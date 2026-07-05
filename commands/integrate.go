@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var intgCmd = &cobra.Command{
+var intCmd = &cobra.Command{
 	Use:     "integrate",
 	Aliases: []string{"int"},
 	Short:   "Integrate tool in exsist project",
@@ -15,15 +15,33 @@ var intgCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := pipeline.NewContext(dryRun)
 
-		return pipeline.New().Add(
+		author, err := cmd.Flags().GetString(_AUTHOR_FLAG)
+		if err != nil {
+			return err
+		}
+
+		version, err := cmd.Flags().GetString(_VERSION_FLAG)
+		if err != nil {
+			return err
+		}
+
+		pl := pipeline.New().Add(
 			actions.CheckNotExists{Path: project.GetGoProjectFile(ctx.ProjectDir)},
 			actions.CheckExistsFile{Path: project.GetGoModFile(ctx.ProjectDir)},
 
 			actions.InitProjectContext{},
 
 			actions.IntMod{},
-			actions.IntProject{},
+			actions.IntProject{
+				Author: author,
+			},
+		)
 
+		if version != "" {
+			pl.Add(actions.VersionSet{Value: version})
+		}
+
+		return pl.Add(
 			actions.EncodeGoMod{},
 			actions.EncodeGoProject{},
 
@@ -33,5 +51,10 @@ var intgCmd = &cobra.Command{
 }
 
 func init() {
-	Root.AddCommand(intgCmd)
+	flags := intCmd.Flags()
+
+	flags.StringP(_AUTHOR_FLAG, _AUTHOR_FLAG_P, "", _AUTHOR_FLAG_U)
+	flags.StringP(_VERSION_FLAG, _VERSION_FLAG_P, "", _VERSION_FLAG_U)
+
+	Root.AddCommand(intCmd)
 }

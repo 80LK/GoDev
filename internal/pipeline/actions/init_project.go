@@ -7,20 +7,25 @@ import (
 
 type InitProject struct {
 	ModuleName string
+	Author     string
 }
 
 func (f InitProject) Plan(ctx *pipeline.Context) ([]pipeline.Patch, error) {
-	if ctx.Project != nil {
+	if ctx.GoProject != nil {
 		return nil, nil
 	}
 
-	ctx.Project = project.New()
-	if err := project.ParseFromGoModuleNameIn(f.ModuleName, ctx.Project); err != nil {
+	ctx.GoProject = project.New()
+	if err := project.ParseFromGoModuleNameIn(f.ModuleName, ctx.GoProject); err != nil {
 		return nil, err
 	}
 
-	if ctx.Project.Project.Version.Major == 0 && ctx.Project.Project.Version.Minor == 0 && ctx.Project.Project.Version.Patch == 0 {
-		ctx.Project.Project.Version.Minor = 1
+	if ctx.GoProject.Project.Version.Major == 0 && ctx.GoProject.Project.Version.Minor == 0 && ctx.GoProject.Project.Version.Patch == 0 {
+		ctx.GoProject.Project.Version.Minor = 1
+	}
+
+	if f.Author != "" {
+		ctx.GoProject.Project.Author = f.Author
 	}
 
 	return nil, nil

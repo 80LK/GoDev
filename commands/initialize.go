@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"os"
 	"path"
 	"path/filepath"
 
@@ -11,9 +10,6 @@ import (
 
 	"github.com/spf13/cobra"
 )
-
-const _TEMPLATE_FLAG = "template"
-const _FORCE_FLAG = "force"
 
 var initCmd = &cobra.Command{
 	Use:     "initialize <module-name>",
@@ -39,17 +35,21 @@ Args:
 		if err != nil {
 			return err
 		}
-
-		cwd, err := os.Getwd()
+		author, err := cmd.Flags().GetString(_AUTHOR_FLAG)
 		if err != nil {
 			return err
 		}
 
+		version, err := cmd.Flags().GetString(_VERSION_FLAG)
+		if err != nil {
+			return err
+		}
+
+		//ctx.ProjectDir now CWD
 		if moduleName == "." {
-			ctx.ProjectDir = cwd
 			moduleName = filepath.Base(ctx.ProjectDir)
 		} else {
-			ctx.ProjectDir = filepath.Join(cwd, path.Base(moduleName))
+			ctx.ProjectDir = filepath.Join(ctx.ProjectDir, path.Base(moduleName))
 		}
 
 		pl := pipeline.New()
@@ -67,9 +67,16 @@ Args:
 
 			actions.InitProject{
 				ModuleName: moduleName,
+				Author:     author,
 			},
 			actions.InitMod{},
+		)
 
+		if version != "" {
+			pl.Add(actions.VersionSet{Value: version})
+		}
+
+		pl.Add(
 			actions.CreateFromTemplate{
 				Template: template,
 			},
@@ -85,6 +92,9 @@ func init() {
 	flags := initCmd.Flags()
 
 	flags.StringP(_TEMPLATE_FLAG, "t", "app", "usage template. Default: app. Available: app; module.")
-	flags.BoolP(_FORCE_FLAG, "f", false, "Force initialize project in non-empty directory")
+	flags.BoolP(_FORCE_FLAG, "f", false, "force initialize project in non-empty directory")
+	flags.StringP(_AUTHOR_FLAG, _AUTHOR_FLAG_P, "", _AUTHOR_FLAG_U)
+	flags.StringP(_VERSION_FLAG, _VERSION_FLAG_P, "", _VERSION_FLAG_U)
+
 	Root.AddCommand(initCmd)
 }

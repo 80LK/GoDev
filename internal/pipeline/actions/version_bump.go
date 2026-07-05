@@ -45,11 +45,11 @@ func (v VersionBump) Plan(ctx *pipeline.Context) ([]pipeline.Patch, error) {
 
 	switch v.Value {
 	case BUMP_PATCH:
-		ctx.Project.Project.Version.Patch++
+		ctx.GoProject.Project.Version.Patch++
 	case BUMP_MINOR:
-		ctx.Project.Project.Version.Minor++
+		ctx.GoProject.Project.Version.Minor++
 	case BUMP_MAJOR:
-		ctx.Project.Project.Version.Major++
+		ctx.GoProject.Project.Version.Major++
 	}
 
 	return nil, nil

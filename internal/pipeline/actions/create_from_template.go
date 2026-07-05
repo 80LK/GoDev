@@ -25,8 +25,8 @@ func (c CreateFromTemplate) Plan(ctx *pipeline.Context) ([]pipeline.Patch, error
 func createApp(ctx *pipeline.Context) ([]pipeline.Patch, error) {
 	return pipeline.New().Add(
 		EnsureDir{Path: filepath.Join(ctx.ProjectDir, "cmd"), Perm: 0666},
-		EnsureDir{Path: filepath.Join(ctx.ProjectDir, "cmd", ctx.Project.Project.Name), Perm: 0666},
-		WriteFile{Path: filepath.Join(ctx.ProjectDir, "cmd", ctx.Project.Project.Name, ctx.Project.Project.Name+".go"), Perm: 0777, Value: []byte("package main\n\nfunc main(){\n}\n")},
+		EnsureDir{Path: filepath.Join(ctx.ProjectDir, "cmd", ctx.GoProject.Project.Name), Perm: 0666},
+		WriteFile{Path: filepath.Join(ctx.ProjectDir, "cmd", ctx.GoProject.Project.Name, ctx.GoProject.Project.Name+".go"), Perm: 0777, Value: []byte("package main\n\nfunc main(){\n}\n")},
 
 		EnsureDir{Path: filepath.Join(ctx.ProjectDir, "internal"), Perm: 0666},
 		EncodeGoProject{},
@@ -35,7 +35,7 @@ func createApp(ctx *pipeline.Context) ([]pipeline.Patch, error) {
 }
 func createModule(ctx *pipeline.Context) ([]pipeline.Patch, error) {
 	return pipeline.New().Add(
-		WriteFile{Path: filepath.Join(ctx.ProjectDir, ctx.Project.Project.Name+".go"), Perm: 0777, Value: []byte(fmt.Sprintf("package %s\n", ctx.Project.Project.Name))},
+		WriteFile{Path: filepath.Join(ctx.ProjectDir, ctx.GoProject.Project.Name+".go"), Perm: 0777, Value: []byte(fmt.Sprintf("package %s\n", ctx.GoProject.Project.Name))},
 
 		EnsureDir{Path: filepath.Join(ctx.ProjectDir, "internal"), Perm: 0666},
 		EncodeGoProject{},

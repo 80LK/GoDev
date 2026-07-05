@@ -9,5 +9,5 @@ type VersionSet struct {
 }
 
 func (v VersionSet) Plan(ctx *pipeline.Context) ([]pipeline.Patch, error) {
-	return nil, ctx.Project.Project.Version.EncodeFrom(v.Value)
+	return nil, ctx.GoProject.Project.Version.EncodeFrom(v.Value)
 }

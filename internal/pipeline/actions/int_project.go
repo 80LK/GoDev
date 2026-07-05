@@ -5,20 +5,26 @@ import (
 	"github.com/80LK/godev/internal/project"
 )
 
-type IntProject struct{}
+type IntProject struct {
+	Author string
+}
 
 func (i IntProject) Plan(ctx *pipeline.Context) ([]pipeline.Patch, error) {
 
-	if ctx.Project == nil {
-		ctx.Project = project.New()
+	if ctx.GoProject == nil {
+		ctx.GoProject = project.New()
 	}
 
-	if err := project.ParseFromGoModIn(ctx.Mod, ctx.Project); err != nil {
+	if err := project.ParseFromGoModIn(ctx.Mod, ctx.GoProject); err != nil {
 		return nil, err
 	}
 
-	if ctx.Project.Project.Version.Major == 0 && ctx.Project.Project.Version.Minor == 0 && ctx.Project.Project.Version.Patch == 0 {
-		ctx.Project.Project.Version.Minor = 1
+	if ctx.GoProject.Project.Version.Major == 0 && ctx.GoProject.Project.Version.Minor == 0 && ctx.GoProject.Project.Version.Patch == 0 {
+		ctx.GoProject.Project.Version.Minor = 1
+	}
+
+	if i.Author != "" {
+		ctx.GoProject.Project.Author = i.Author
 	}
 	return nil, nil
 }

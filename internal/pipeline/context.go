@@ -13,8 +13,8 @@ type Context struct {
 	DryRun     bool
 	ProjectDir string
 
-	Project *project.GoProject
-	Mod     *modfile.File
+	GoProject *project.GoProject
+	Mod       *modfile.File
 
 	GoVer *version.Version
 
@@ -40,7 +40,7 @@ func NewContext(dryRun bool) *Context {
 		ProjectDir: cwd,
 		GoVer:      ver,
 		values:     make(map[string]any),
-		Project:    nil,
+		GoProject:  nil,
 		Mod:        nil,
 	}
 }
