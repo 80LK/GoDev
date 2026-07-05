@@ -56,8 +56,6 @@ func (p PatchSources) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 		if !d.IsDir() && filepath.Ext(path) == ".go" {
 			oldData, _ := os.ReadFile(path)
 
-			hasCRLF := bytes.Contains(oldData, []byte("\r\n"))
-
 			fset := token.NewFileSet()
 
 			file, err := parser.ParseFile(
@@ -73,10 +71,13 @@ func (p PatchSources) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 			for _, imp := range file.Imports {
 				path, _ := strconv.Unquote(imp.Path.Value)
 				if path == oldModule {
-					path = newModule
+					imp.Path.Value = strconv.Quote(newModule)
 				} else if v, ok := strings.CutPrefix(path, oldModule+"/"); ok {
 					path = newModule + "/" + v
+				} else {
+					continue
 				}
+				imp.Path.Value = strconv.Quote(path)
 			}
 
 			var buf bytes.Buffer
@@ -85,14 +86,6 @@ func (p PatchSources) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 			}
 
 			newData := buf.Bytes()
-
-			if hasCRLF {
-				newData = bytes.ReplaceAll(
-					newData,
-					[]byte("\n"),
-					[]byte("\r\n"),
-				)
-			}
 
 			patchs = append(patchs, patches.WriteFilePatch{
 				Path:    path,
