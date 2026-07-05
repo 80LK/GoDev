@@ -32,6 +32,7 @@ func (a InitProjectContext) Plan(
 			return nil, err
 		}
 
+		ctx.Project = new(project.GoProject)
 		err = project.ParseIn(doc, ctx.Project)
 		if err != nil {
 			return nil, err
