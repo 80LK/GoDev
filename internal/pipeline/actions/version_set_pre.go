@@ -11,7 +11,6 @@ type VersionSetPre struct {
 }
 
 func (v VersionSetPre) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
-	context.Set(ctx, _OLD_VERSION_CONTEXT_KEY, ctx.GoProject.Project.Version.Clone())
 	ctx.GoProject.Project.Version.PreRelease = v.Value
 	return nil, nil
 }

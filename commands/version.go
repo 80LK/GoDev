@@ -45,7 +45,6 @@ Args:
 
 		pl.Add(
 			actions.EncodeGoProject{},
-			actions.PatchSources{},
 		)
 
 		return pl.Execute(ctx)
@@ -72,7 +71,6 @@ Args:
 			actions.InitProjectContext{},
 			actions.VersionSetPre{Value: args[0]},
 			actions.EncodeGoProject{},
-			actions.PatchSources{},
 		).Execute(ctx)
 	},
 }
@@ -97,7 +95,6 @@ Args:
 			actions.InitProjectContext{},
 			actions.VersionSet{Value: args[0]},
 			actions.EncodeGoProject{},
-			actions.PatchSources{},
 		).Execute(ctx)
 	},
 }

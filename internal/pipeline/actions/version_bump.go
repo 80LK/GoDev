@@ -45,16 +45,22 @@ func (v VersionBump) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 		return nil, ErrBump
 	}
 
-	context.Set(ctx, _OLD_VERSION_CONTEXT_KEY, ctx.GoProject.Project.Version.Clone())
+	oldVersion := ctx.GoProject.Project.Version.Clone()
 
 	switch v.Value {
 	case BUMP_PATCH:
+		ctx.GoProject.Project.Version.PreRelease = ""
 		ctx.GoProject.Project.Version.Patch++
 	case BUMP_MINOR:
+		ctx.GoProject.Project.Version.PreRelease = ""
+		ctx.GoProject.Project.Version.Patch = 0
 		ctx.GoProject.Project.Version.Minor++
 	case BUMP_MAJOR:
+		ctx.GoProject.Project.Version.PreRelease = ""
+		ctx.GoProject.Project.Version.Patch = 0
+		ctx.GoProject.Project.Version.Minor = 0
 		ctx.GoProject.Project.Version.Major++
 	}
 
-	return nil, nil
+	return (PatchSources{OldVersion: oldVersion}).Plan(ctx)
 }

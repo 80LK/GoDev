@@ -17,25 +17,25 @@ import (
 	"github.com/80LK/godev/internal/version"
 )
 
-type PatchSources struct{}
-
-const _OLD_VERSION_CONTEXT_KEY = "old_version"
+type PatchSources struct {
+	OldVersion *version.Version
+}
 
 func (p PatchSources) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
-	oldVersion, ok := context.Get[*version.Version](ctx, _OLD_VERSION_CONTEXT_KEY)
-	if !ok {
-		return nil, nil
-	}
-
 	if ctx.GoProject.Project.Version.Major < 2 {
 		return nil, nil
 	}
 
-	if oldVersion.Major == ctx.GoProject.Project.Version.Major {
+	if p.OldVersion.Major == ctx.GoProject.Project.Version.Major {
 		return nil, nil
 	}
 
-	oldModule := ctx.GoProject.Project.Module
+	var oldModule string
+	if p.OldVersion.Major < 2 {
+		oldModule = ctx.GoProject.Project.Module
+	} else {
+		oldModule = ctx.GoProject.Project.Module + "/v" + strconv.FormatUint(uint64(p.OldVersion.Major), 10)
+	}
 	newModule := ctx.GoProject.Project.Module + "/v" + strconv.FormatUint(uint64(ctx.GoProject.Project.Version.Major), 10)
 
 	// patch go.mod

@@ -77,15 +77,13 @@ Args:
 			pl.Add(actions.VersionSet{Value: version})
 		}
 
-		pl.Add(
+		return pl.Add(
 			actions.CreateFromTemplate{
 				Template: template,
 			},
 
 			actions.GitInit{},
-		)
-
-		return pl.Execute(ctx)
+		).Execute(ctx)
 	},
 }
 
