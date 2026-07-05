@@ -7,11 +7,13 @@ import (
 
 	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/actions"
+	"github.com/80LK/godev/internal/project"
 
 	"github.com/spf13/cobra"
 )
 
 const _TEMPLATE_FLAG = "template"
+const _FORCE_FLAG = "force"
 
 var initCmd = &cobra.Command{
 	Use:     "initialize <module-name>",
@@ -33,6 +35,11 @@ Args:
 			return err
 		}
 
+		force, err := cmd.Flags().GetBool(_FORCE_FLAG)
+		if err != nil {
+			return err
+		}
+
 		cwd, err := os.Getwd()
 		if err != nil {
 			return err
@@ -45,8 +52,16 @@ Args:
 			ctx.ProjectDir = filepath.Join(cwd, path.Base(moduleName))
 		}
 
-		pl := pipeline.New().Add(
-			actions.EnsureEmptyDir{Path: ctx.ProjectDir, Perm: 0777},
+		pl := pipeline.New()
+		if force {
+			pl.Add(actions.EnsureDir{Path: ctx.ProjectDir, Perm: 0777})
+		} else {
+			pl.Add(actions.EnsureEmptyDir{Path: ctx.ProjectDir, Perm: 0777})
+		}
+
+		pl.Add(
+			actions.CheckNotExists{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+			actions.CheckNotExists{Path: project.GetGoModFile(ctx.ProjectDir)},
 
 			actions.InitProjectContext{},
 
@@ -58,6 +73,8 @@ Args:
 			actions.CreateFromTemplate{
 				Template: template,
 			},
+
+			actions.GitInit{},
 		)
 
 		return pl.Execute(ctx)
@@ -65,6 +82,9 @@ Args:
 }
 
 func init() {
-	initCmd.Flags().StringP(_TEMPLATE_FLAG, "t", "app", "usage template. Default: app. Available: app; module.")
+	flags := initCmd.Flags()
+
+	flags.StringP(_TEMPLATE_FLAG, "t", "app", "usage template. Default: app. Available: app; module.")
+	flags.BoolP(_FORCE_FLAG, "f", false, "Force initialize project in non-empty directory")
 	Root.AddCommand(initCmd)
 }

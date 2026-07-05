@@ -25,6 +25,7 @@ var intgCmd = &cobra.Command{
 		return pipeline.New().Add(
 			actions.CheckNotExists{Path: project.GetGoProjectFile(ctx.ProjectDir)},
 			actions.CheckExistsFile{Path: project.GetGoModFile(ctx.ProjectDir)},
+
 			actions.InitProjectContext{},
 
 			actions.IntMod{},
@@ -32,6 +33,8 @@ var intgCmd = &cobra.Command{
 
 			actions.EncodeGoMod{},
 			actions.EncodeGoProject{},
+
+			actions.GitInit{},
 		).Execute(ctx)
 	},
 }
