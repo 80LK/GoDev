@@ -59,14 +59,19 @@ func (p *Pipeline) Execute(ctx *context.Context) error {
 func dryRun(
 	patches []Patch,
 ) error {
-	for i, patch := range patches {
+	i := 1
+	for _, patch := range patches {
 		sum := patch.Summary()
-		fmt.Printf("%d. %s\n", i+1, sum)
-
 		diff, err := patch.Diff()
+
 		if err != nil {
 			return err
 		}
+		if sum == "" && diff == "" {
+			continue
+		}
+
+		fmt.Printf("%d. %s\n", i, sum)
 		if diff != "" {
 			fmt.Println(diff)
 		}

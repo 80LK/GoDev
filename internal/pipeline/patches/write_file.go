@@ -42,7 +42,7 @@ func (p WriteFilePatch) Summary() string {
 		return "create file " + p.Path
 
 	case bytes.Equal(p.OldData, p.NewData):
-		return "unchanged file " + p.Path
+		return ""
 
 	default:
 		return "modify file " + p.Path
