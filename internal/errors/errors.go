@@ -24,5 +24,5 @@ func ErrNotFile(path string) error {
 	return notFile{path: path}
 }
 func ErrNotDir(path string) error {
-	return notFile{path: path}
+	return notDir{path: path}
 }
