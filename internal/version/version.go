@@ -102,7 +102,6 @@ func (v *Version) DecodeModlike(val modlike.Value) error {
 	}
 
 	var raw string
-	var err error
 	if kind == modlike.K_LIST {
 		l, _ := val.ToList()
 		raw, _ = l.GetStringFirst()
@@ -110,8 +109,8 @@ func (v *Version) DecodeModlike(val modlike.Value) error {
 		str, _ := val.ToString()
 		raw = str.Get()
 	}
-	v, err = Parse(raw)
-	return err
+
+	return v.EncodeFrom(raw)
 }
 
 func (v *Version) EncodeModlike(val modlike.Value) error {
