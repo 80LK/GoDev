@@ -1,6 +1,7 @@
 package pipeline
 
 import (
+	"os"
 	"os/exec"
 
 	"github.com/80LK/godev/internal/project"
@@ -29,11 +30,18 @@ func NewContext(dryRun bool) *Context {
 	if err != nil {
 		panic(err)
 	}
+	cwd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
 
 	return &Context{
-		DryRun: dryRun,
-		GoVer:  ver,
-		values: make(map[string]any),
+		DryRun:     dryRun,
+		ProjectDir: cwd,
+		GoVer:      ver,
+		values:     make(map[string]any),
+		Project:    nil,
+		Mod:        nil,
 	}
 }
 

@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"os"
-
 	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/actions"
 	"github.com/80LK/godev/internal/project"
@@ -16,11 +14,6 @@ var intgCmd = &cobra.Command{
 	Long:    "Integrate tool in exsist project",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := pipeline.NewContext(dryRun)
-		cwd, err := os.Getwd()
-		if err != nil {
-			return err
-		}
-		ctx.ProjectDir = cwd
 
 		return pipeline.New().Add(
 			actions.CheckNotExists{Path: project.GetGoProjectFile(ctx.ProjectDir)},
