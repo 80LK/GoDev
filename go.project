@@ -5,3 +5,10 @@ project (
 	module github.com/80LK/godev
 	author 80LK
 )
+
+build (
+	(
+		input "./cmd/god/god.go"
+		output "./dist/god.exe"
+	)
+)

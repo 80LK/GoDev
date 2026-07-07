@@ -52,7 +52,10 @@ func (p PatchSources) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 	}
 
 	// patch *.go
-
+	parallelPatch := &patches.ParallelPatch{
+		Items: make([]pipeline.Patch, 0, 10),
+	}
+	patchs = append(patchs, parallelPatch)
 	err = filepath.WalkDir(ctx.ProjectDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -92,7 +95,7 @@ func (p PatchSources) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 
 			newData := buf.Bytes()
 
-			patchs = append(patchs, patches.NewWriteFilePatch(
+			parallelPatch.Items = append(parallelPatch.Items, patches.NewWriteFilePatch(
 				path,
 				oldData,
 				newData,
