@@ -7,14 +7,18 @@ import (
 )
 
 type VersionSet struct {
-	Value string
+	OldVersionKey string
+	Value         string
 }
 
 func (v VersionSet) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
-	oldVersion := ctx.GoProject.Project.Version.Clone()
+	if v.OldVersionKey != "" {
+		context.Set(ctx, v.OldVersionKey, ctx.GoProject.Project.Version.Clone())
+	}
+
 	if err := ctx.GoProject.Project.Version.EncodeFrom(v.Value); err != nil {
 		return nil, err
 	}
 
-	return (PatchSources{OldVersion: oldVersion}).Plan(ctx)
+	return nil, nil
 }

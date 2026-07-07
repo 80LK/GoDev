@@ -37,7 +37,7 @@ Args:
 		pl := pipeline.New().Add(
 			actions.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
 			actions.InitProjectContext{},
-			actions.VersionBump{Value: bump},
+			actions.VersionBump{OldVersionKey: "old_version", Value: bump},
 		)
 		if pre != "" {
 			pl.Add(actions.VersionSetPre{Value: pre})
@@ -45,6 +45,7 @@ Args:
 
 		pl.Add(
 			actions.EncodeGoProject{},
+			actions.PatchSources{OldVersionKey: "old_version"},
 		)
 
 		return pl.Execute(ctx)
@@ -93,8 +94,9 @@ Args:
 		return pipeline.New().Add(
 			actions.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
 			actions.InitProjectContext{},
-			actions.VersionSet{Value: args[0]},
+			actions.VersionSet{OldVersionKey: "old_version", Value: args[0]},
 			actions.EncodeGoProject{},
+			actions.PatchSources{OldVersionKey: "old_version"},
 		).Execute(ctx)
 	},
 }

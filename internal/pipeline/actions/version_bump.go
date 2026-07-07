@@ -37,7 +37,8 @@ func ToBump(str string) (Bump, error) {
 }
 
 type VersionBump struct {
-	Value Bump
+	OldVersionKey string
+	Value         Bump
 }
 
 func (v VersionBump) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
@@ -45,7 +46,9 @@ func (v VersionBump) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 		return nil, ErrBump
 	}
 
-	oldVersion := ctx.GoProject.Project.Version.Clone()
+	if v.OldVersionKey != "" {
+		context.Set(ctx, v.OldVersionKey, ctx.GoProject.Project.Version.Clone())
+	}
 
 	switch v.Value {
 	case BUMP_PATCH:
@@ -62,5 +65,5 @@ func (v VersionBump) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 		ctx.GoProject.Project.Version.Major++
 	}
 
-	return (PatchSources{OldVersion: oldVersion}).Plan(ctx)
+	return nil, nil
 }

@@ -18,7 +18,7 @@ import (
 )
 
 type PatchSources struct {
-	OldVersion *version.Version
+	OldVersionKey string
 }
 
 func (p PatchSources) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
@@ -26,15 +26,20 @@ func (p PatchSources) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 		return nil, nil
 	}
 
-	if p.OldVersion.Major == ctx.GoProject.Project.Version.Major {
+	oldVersion, ok := context.Get[*version.Version](ctx, p.OldVersionKey)
+	if !ok {
+		return nil, nil
+	}
+
+	if oldVersion.Major == ctx.GoProject.Project.Version.Major {
 		return nil, nil
 	}
 
 	var oldModule string
-	if p.OldVersion.Major < 2 {
+	if oldVersion.Major < 2 {
 		oldModule = ctx.GoProject.Project.Module
 	} else {
-		oldModule = ctx.GoProject.Project.Module + "/v" + strconv.FormatUint(uint64(p.OldVersion.Major), 10)
+		oldModule = ctx.GoProject.Project.Module + "/v" + strconv.FormatUint(uint64(oldVersion.Major), 10)
 	}
 	newModule := ctx.GoProject.Project.Module + "/v" + strconv.FormatUint(uint64(ctx.GoProject.Project.Version.Major), 10)
 
