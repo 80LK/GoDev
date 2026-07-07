@@ -87,12 +87,12 @@ func (p PatchSources) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 
 			newData := buf.Bytes()
 
-			patchs = append(patchs, patches.WriteFilePatch{
-				Path:    path,
-				OldData: oldData,
-				NewData: newData,
-				Perm:    0644,
-			})
+			patchs = append(patchs, patches.NewWriteFilePatch(
+				path,
+				oldData,
+				newData,
+				0644,
+			))
 		}
 
 		return nil

@@ -34,11 +34,11 @@ func (a EncodeGoMod) Plan(
 	oldData, _ := os.ReadFile(path)
 
 	return []pipeline.Patch{
-		patches.WriteFilePatch{
-			Path:    path,
-			OldData: oldData,
-			NewData: data,
-			Perm:    0666,
-		},
+		patches.NewWriteFilePatch(
+			path,
+			oldData,
+			data,
+			0666,
+		),
 	}, nil
 }

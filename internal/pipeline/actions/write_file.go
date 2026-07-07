@@ -47,11 +47,11 @@ func (a WriteFile) Plan(
 	oldData, _ := os.ReadFile(a.Path)
 
 	return []pipeline.Patch{
-		patches.WriteFilePatch{
-			Path:    a.Path,
-			OldData: oldData,
-			NewData: data,
-			Perm:    a.Perm,
-		},
+		patches.NewWriteFilePatch(
+			a.Path,
+			oldData,
+			data,
+			a.Perm,
+		),
 	}, nil
 }
