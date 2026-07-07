@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var buildCmd = &cobra.Command{
+var BuildCmd = &cobra.Command{
 	Use:   "build",
 	Short: "short desc",
 	Long:  "long desc",
@@ -16,5 +16,5 @@ var buildCmd = &cobra.Command{
 }
 
 func init() {
-	Root.AddCommand(buildCmd)
+	Root.AddCommand(BuildCmd)
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var releaseCmd = &cobra.Command{
+var ReleaseCmd = &cobra.Command{
 	Use:   "release",
 	Short: "Set git tag for release",
 	Long:  "Set git tag for release",
@@ -26,5 +26,5 @@ var releaseCmd = &cobra.Command{
 }
 
 func init() {
-	Root.AddCommand(releaseCmd)
+	Root.AddCommand(ReleaseCmd)
 }

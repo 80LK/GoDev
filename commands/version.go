@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var versionCmd = &cobra.Command{
+var VersionCmd = &cobra.Command{
 	Use:   "version <patch|minor|major>",
 	Short: "Bump version in go.project",
 	Long: `Bump version in go.project
@@ -51,7 +51,7 @@ Args:
 	},
 }
 
-var versionPreCmd = &cobra.Command{
+var VersionPreCmd = &cobra.Command{
 	Use:   "pre <pre-release-tag>",
 	Short: "Set pre-release tag in go.project",
 	Long: `Set pre-release tag in go.project.
@@ -75,7 +75,7 @@ Args:
 	},
 }
 
-var versionSetCmd = &cobra.Command{
+var VersionSetCmd = &cobra.Command{
 	Use:   "set <version>",
 	Short: "Set version in go.project",
 	Long: `Set version tag in go.project.
@@ -100,10 +100,10 @@ Args:
 }
 
 func init() {
-	versionCmd.Flags().StringP("pre", "p", "", "Set pre-release tag")
-	versionCmd.AddCommand(
-		versionSetCmd,
-		versionPreCmd,
+	VersionCmd.Flags().StringP("pre", "p", "", "Set pre-release tag")
+	VersionCmd.AddCommand(
+		VersionSetCmd,
+		VersionPreCmd,
 	)
-	Root.AddCommand(versionCmd)
+	Root.AddCommand(VersionCmd)
 }

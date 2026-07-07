@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var intCmd = &cobra.Command{
+var IntCmd = &cobra.Command{
 	Use:     "integrate",
 	Aliases: []string{"int"},
 	Short:   "Integrate tool in exsist project",
@@ -52,10 +52,10 @@ var intCmd = &cobra.Command{
 }
 
 func init() {
-	flags := intCmd.Flags()
+	flags := IntCmd.Flags()
 
 	flags.StringP(_AUTHOR_FLAG, _AUTHOR_FLAG_P, "", _AUTHOR_FLAG_U)
 	flags.StringP(_VERSION_FLAG, _VERSION_FLAG_P, "", _VERSION_FLAG_U)
 
-	Root.AddCommand(intCmd)
+	Root.AddCommand(IntCmd)
 }
