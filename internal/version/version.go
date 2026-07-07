@@ -20,7 +20,7 @@ func (v *Version) Clone() *Version {
 	_v.Major = v.Major
 	_v.Minor = v.Minor
 	_v.Patch = v.Patch
-	_v.Patch = v.Patch
+	_v.PreRelease = v.PreRelease
 	_v.Meta = v.Meta
 	return _v
 }
