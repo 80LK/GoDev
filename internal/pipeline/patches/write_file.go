@@ -3,7 +3,9 @@ package patches
 import (
 	"bytes"
 	"os"
+	"strings"
 
+	"github.com/80LK/godev/internal/pipeline/patches/context"
 	"github.com/pmezard/go-difflib/difflib"
 )
 
@@ -40,7 +42,14 @@ func (p writeFilePatch) Apply() error {
 		p.Perm,
 	)
 }
-func (p writeFilePatch) Diff() (string, error) {
+
+func (p writeFilePatch) Summary(ctx *context.Context) (string, error) {
+	if bytes.Equal(p.OldData, p.NewData) {
+		return "", nil
+	}
+
+	ctx = context.Get(ctx)
+
 	diff := difflib.UnifiedDiff{
 		A: difflib.SplitLines(string(p.OldData)),
 		B: difflib.SplitLines(string(p.NewData)),
@@ -51,17 +60,24 @@ func (p writeFilePatch) Diff() (string, error) {
 		Context: 3,
 	}
 
-	return difflib.GetUnifiedDiffString(diff)
-}
-func (p writeFilePatch) Summary() string {
-	switch {
-	case len(p.OldData) == 0:
-		return "create file " + p.Path
-
-	case bytes.Equal(p.OldData, p.NewData):
-		return ""
-
-	default:
-		return "modify file " + p.Path
+	diffS, err := difflib.GetUnifiedDiffString(diff)
+	if err != nil {
+		return "", err
 	}
+
+	lines := difflib.SplitLines(diffS)
+	var str strings.Builder
+	str.WriteString(ctx.GetPrefix() + ctx.GetCounter())
+	if len(p.OldData) == 0 {
+		str.WriteString("create file ")
+	} else {
+		str.WriteString("modify file ")
+	}
+	str.WriteString(p.Path + "\n")
+
+	for _, line := range lines {
+		str.WriteString(ctx.GetPrefix() + line)
+	}
+
+	return str.String(), nil
 }

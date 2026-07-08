@@ -1,7 +1,8 @@
 package patches
 
+import "github.com/80LK/godev/internal/pipeline/patches/context"
+
 type Patch interface {
 	Apply() error
-	Diff() (string, error)
-	Summary() string
+	Summary(ctx *context.Context) (string, error)
 }

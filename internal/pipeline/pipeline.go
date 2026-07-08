@@ -6,6 +6,7 @@ import (
 	"github.com/80LK/godev/internal/pipeline/actions"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/pipeline/patches"
+	summary "github.com/80LK/godev/internal/pipeline/patches/context"
 )
 
 type Pipeline struct {
@@ -39,23 +40,18 @@ func (p *Pipeline) Execute(ctx *context.Context) error {
 func dryRun(
 	patches []patches.Patch,
 ) error {
-	i := 1
+	ctx := summary.Default()
 	for _, patch := range patches {
-		sum := patch.Summary()
-		diff, err := patch.Diff()
+		sum, err := patch.Summary(ctx)
 
 		if err != nil {
 			return err
 		}
-		if sum == "" && diff == "" {
+		if sum == "" {
 			continue
 		}
 
-		fmt.Printf("%d. %s\n", i, sum)
-		i++
-		if diff != "" {
-			fmt.Println(diff)
-		}
+		fmt.Printf("%s", sum)
 	}
 	return nil
 }

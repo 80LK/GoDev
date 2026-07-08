@@ -2,6 +2,8 @@ package patches
 
 import (
 	"os"
+
+	"github.com/80LK/godev/internal/pipeline/patches/context"
 )
 
 type CreateDirPatch struct {
@@ -13,10 +15,8 @@ func (p CreateDirPatch) Apply() error {
 	return os.MkdirAll(p.Path, p.Perm)
 }
 
-func (p CreateDirPatch) Diff() (string, error) {
-	return "", nil
-}
+func (p CreateDirPatch) Summary(ctx *context.Context) (string, error) {
+	ctx = context.Get(ctx)
 
-func (p CreateDirPatch) Summary() string {
-	return "mkdir " + p.Path
+	return ctx.GetPrefix() + ctx.GetCounter() + "mkdir " + p.Path + "\n", nil
 }

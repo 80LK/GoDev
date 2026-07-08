@@ -4,6 +4,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/80LK/godev/internal/pipeline/patches/context"
 )
 
 type ShellPatch struct {
@@ -33,25 +35,23 @@ func (p ShellPatch) Apply() error {
 	return cmd.Run()
 }
 
-func (p ShellPatch) Diff() (string, error) {
-	return "", nil
-}
+func (p ShellPatch) Summary(ctx *context.Context) (string, error) {
+	ctx = context.Get(ctx)
 
-func (p ShellPatch) Summary() string {
 	var str strings.Builder
 
-	str.WriteString("shell ")
-	str.WriteString(p.Command)
+	str.WriteString(ctx.GetPrefix() + ctx.GetCounter() + "shell " + p.Command)
 	for _, v := range p.Args {
 		str.WriteRune(' ')
 		str.WriteString(v)
 	}
+	str.WriteRune('\n')
 
 	if p.WorkDir != "" {
-		str.WriteRune('\n')
-		str.WriteString("Workdir: ")
+		str.WriteString(ctx.GetPrefix() + "Workdir: ")
 		str.WriteString(p.WorkDir)
+		str.WriteRune('\n')
 	}
 
-	return str.String()
+	return str.String(), nil
 }

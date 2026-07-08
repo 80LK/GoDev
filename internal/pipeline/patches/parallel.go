@@ -1,9 +1,9 @@
 package patches
 
 import (
-	"strconv"
 	"strings"
 
+	"github.com/80LK/godev/internal/pipeline/patches/context"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -30,33 +30,32 @@ func (p ParallelPatch) Apply() error {
 
 	return g.Wait()
 }
+func (p ParallelPatch) Summary(ctx *context.Context) (string, error) {
+	ctx = context.Get(ctx)
 
-func (p ParallelPatch) Diff() (string, error) {
-	return "", nil
-}
-
-func (p ParallelPatch) Summary() string {
 	l := len(p.Items)
 	switch l {
 	case 0:
-		return ""
+		return "", nil
 	case 1:
-		return p.Items[0].Summary()
+		return p.Items[0].Summary(ctx)
 	}
 
 	var str strings.Builder
 
-	str.WriteString("Parallel:")
-	i := 1
+	str.WriteString(ctx.GetPrefix() + ctx.GetCounter() + "Parallel:\n")
+	nextLevelCtx := ctx.NextLevel()
 	for _, item := range p.Items {
-		sum := item.Summary()
+		sum, err := item.Summary(nextLevelCtx)
+		if err != nil {
+			return "", err
+		}
 		if sum == "" {
 			continue
 		}
 
-		str.WriteString("\n\t" + strconv.Itoa(i) + ". " + item.Summary())
-		i++
+		str.WriteString(sum)
 	}
 
-	return str.String()
+	return str.String(), nil
 }
