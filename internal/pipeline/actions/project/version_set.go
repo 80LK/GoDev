@@ -7,6 +7,7 @@ import (
 
 type VersionSet struct {
 	OldVersionKey string
+	NewVersionKey string
 	Value         string
 }
 
@@ -17,6 +18,10 @@ func (v VersionSet) Plan(ctx *context.Context) ([]patches.Patch, error) {
 
 	if err := ctx.GoProject.Project.Version.EncodeFrom(v.Value); err != nil {
 		return nil, err
+	}
+
+	if v.NewVersionKey != "" {
+		context.Set(ctx, v.NewVersionKey, ctx.GoProject.Project.Version.Clone())
 	}
 
 	return nil, nil

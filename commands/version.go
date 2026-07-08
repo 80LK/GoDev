@@ -43,16 +43,16 @@ Args:
 			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
 			gitAct.CheckClearGit{},
 			projectAct.InitProjectContext{},
-			projectAct.VersionBump{OldVersionKey: "old_version", Value: bump},
+			projectAct.VersionBump{OldVersionKey: "old_version", NewVersionKey: "new_version", Value: bump},
 		)
 		if pre != "" {
-			pl.Add(projectAct.VersionSetPre{Value: pre})
+			pl.Add(projectAct.VersionSetPre{NewVersionKey: "new_version", Value: pre})
 		}
 
 		pl.Add(
 			projectAct.EncodeGoProject{},
 			projectAct.PatchSources{OldVersionKey: "old_version"},
-			gitAct.GitCommit{InputKey: "old_version"},
+			gitAct.GitCommit{InputKey: "new_version"},
 		)
 
 		if release {
@@ -82,9 +82,9 @@ Args:
 			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
 			gitAct.CheckClearGit{},
 			projectAct.InitProjectContext{},
-			projectAct.VersionSetPre{OldVersionKey: "old_version", Value: args[0]},
+			projectAct.VersionSetPre{OldVersionKey: "old_version", NewVersionKey: "new_version", Value: args[0]},
 			projectAct.EncodeGoProject{},
-			gitAct.GitCommit{InputKey: "old_version"},
+			gitAct.GitCommit{InputKey: "new_version"},
 		)
 
 		if release {
@@ -114,10 +114,10 @@ Args:
 			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
 			gitAct.CheckClearGit{},
 			projectAct.InitProjectContext{},
-			projectAct.VersionSet{OldVersionKey: "old_version", Value: args[0]},
+			projectAct.VersionSet{OldVersionKey: "old_version", NewVersionKey: "new_version", Value: args[0]},
 			projectAct.EncodeGoProject{},
 			projectAct.PatchSources{OldVersionKey: "old_version"},
-			gitAct.GitCommit{InputKey: "old_version"},
+			gitAct.GitCommit{InputKey: "new_version"},
 		)
 
 		if release {
