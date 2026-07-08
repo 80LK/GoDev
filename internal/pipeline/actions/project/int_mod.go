@@ -20,8 +20,5 @@ func (i IntMod) Plan(ctx *context.Context) ([]patches.Patch, error) {
 		ctx.Mod.AddTool(TOOL_PATH)
 	}
 
-	if !utils.HasRequire(ctx.Mod, TOOL_PATH) {
-		ctx.Mod.AddNewRequire(TOOL_PATH, TOOL_VERSION, true)
-	}
 	return nil, nil
 }

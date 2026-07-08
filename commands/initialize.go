@@ -5,9 +5,12 @@ import (
 	"path/filepath"
 
 	"github.com/80LK/godev/internal/pipeline"
-	"github.com/80LK/godev/internal/pipeline/actions"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/project"
+
+	fsAct "github.com/80LK/godev/internal/pipeline/actions/fs"
+	gitAct "github.com/80LK/godev/internal/pipeline/actions/git"
+	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
 
 	"github.com/spf13/cobra"
 )
@@ -55,34 +58,35 @@ Args:
 
 		pl := pipeline.New()
 		if force {
-			pl.Add(actions.EnsureDir{Path: ctx.ProjectDir, Perm: 0777})
+			pl.Add(fsAct.EnsureDir{Path: ctx.ProjectDir, Perm: 0777})
 		} else {
-			pl.Add(actions.EnsureEmptyDir{Path: ctx.ProjectDir, Perm: 0777})
+			pl.Add(fsAct.EnsureEmptyDir{Path: ctx.ProjectDir, Perm: 0777})
 		}
 
 		pl.Add(
-			actions.CheckNotExists{Path: project.GetGoProjectFile(ctx.ProjectDir)},
-			actions.CheckNotExists{Path: project.GetGoModFile(ctx.ProjectDir)},
+			fsAct.CheckNotExists{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+			fsAct.CheckNotExists{Path: project.GetGoModFile(ctx.ProjectDir)},
 
-			actions.InitProjectContext{},
+			projectAct.InitProjectContext{},
 
-			actions.InitProject{
+			projectAct.InitProject{
 				ModuleName: moduleName,
 				Author:     author,
 			},
-			actions.InitMod{},
+			projectAct.InitMod{},
 		)
 
 		if version != "" {
-			pl.Add(actions.VersionSet{Value: version})
+			pl.Add(projectAct.VersionSet{Value: version})
 		}
 
 		return pl.Add(
-			actions.CreateFromTemplate{
+			projectAct.CreateFromTemplate{
 				Template: template,
 			},
 
-			actions.GitInit{},
+			gitAct.GitInit{},
+			gitAct.GitCommit{Value: "init commit"},
 		).Execute(ctx)
 	},
 }

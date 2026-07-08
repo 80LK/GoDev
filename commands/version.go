@@ -4,10 +4,13 @@ import (
 	"errors"
 
 	"github.com/80LK/godev/internal/pipeline"
-	"github.com/80LK/godev/internal/pipeline/actions"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/project"
 	"github.com/spf13/cobra"
+
+	fsAct "github.com/80LK/godev/internal/pipeline/actions/fs"
+	gitAct "github.com/80LK/godev/internal/pipeline/actions/git"
+	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
 )
 
 var VersionCmd = &cobra.Command{
@@ -20,10 +23,10 @@ Args:
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
-			return actions.ErrBump
+			return projectAct.ErrBump
 		}
 
-		bump, err := actions.ToBump(args[0])
+		bump, err := projectAct.ToBump(args[0])
 		if err != nil {
 			return err
 		}
@@ -35,17 +38,19 @@ Args:
 
 		ctx := context.New(dryRun)
 		pl := pipeline.New().Add(
-			actions.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
-			actions.InitProjectContext{},
-			actions.VersionBump{OldVersionKey: "old_version", Value: bump},
+			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+			gitAct.CheckClearGit{},
+			projectAct.InitProjectContext{},
+			projectAct.VersionBump{OldVersionKey: "old_version", Value: bump},
 		)
 		if pre != "" {
-			pl.Add(actions.VersionSetPre{Value: pre})
+			pl.Add(projectAct.VersionSetPre{Value: pre})
 		}
 
 		pl.Add(
-			actions.EncodeGoProject{},
-			actions.PatchSources{OldVersionKey: "old_version"},
+			projectAct.EncodeGoProject{},
+			projectAct.PatchSources{OldVersionKey: "old_version"},
+			gitAct.GitCommit{InputKey: "old_version"},
 		)
 
 		return pl.Execute(ctx)
@@ -68,10 +73,12 @@ Args:
 		ctx := context.New(dryRun)
 
 		return pipeline.New().Add(
-			actions.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
-			actions.InitProjectContext{},
-			actions.VersionSetPre{Value: args[0]},
-			actions.EncodeGoProject{},
+			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+			gitAct.CheckClearGit{},
+			projectAct.InitProjectContext{},
+			projectAct.VersionSetPre{OldVersionKey: "old_version", Value: args[0]},
+			projectAct.EncodeGoProject{},
+			gitAct.GitCommit{InputKey: "old_version"},
 		).Execute(ctx)
 	},
 }
@@ -92,11 +99,13 @@ Args:
 		ctx := context.New(dryRun)
 
 		return pipeline.New().Add(
-			actions.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
-			actions.InitProjectContext{},
-			actions.VersionSet{OldVersionKey: "old_version", Value: args[0]},
-			actions.EncodeGoProject{},
-			actions.PatchSources{OldVersionKey: "old_version"},
+			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+			gitAct.CheckClearGit{},
+			projectAct.InitProjectContext{},
+			projectAct.VersionSet{OldVersionKey: "old_version", Value: args[0]},
+			projectAct.EncodeGoProject{},
+			projectAct.PatchSources{OldVersionKey: "old_version"},
+			gitAct.GitCommit{InputKey: "old_version"},
 		).Execute(ctx)
 	},
 }

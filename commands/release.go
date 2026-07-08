@@ -2,7 +2,9 @@ package commands
 
 import (
 	"github.com/80LK/godev/internal/pipeline"
-	"github.com/80LK/godev/internal/pipeline/actions"
+	fsAct "github.com/80LK/godev/internal/pipeline/actions/fs"
+	gitAct "github.com/80LK/godev/internal/pipeline/actions/git"
+	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/project"
 	"github.com/spf13/cobra"
@@ -16,11 +18,11 @@ var ReleaseCmd = &cobra.Command{
 		ctx := context.New(dryRun)
 
 		return pipeline.New().Add(
-			actions.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
-			actions.InitProjectContext{},
+			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+			projectAct.InitProjectContext{},
 
-			actions.CheckClearGit{},
-			actions.GitTagVersion{},
+			gitAct.CheckClearGit{},
+			gitAct.GitTagVersion{},
 		).Execute(ctx)
 	},
 }

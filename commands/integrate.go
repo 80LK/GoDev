@@ -2,10 +2,13 @@ package commands
 
 import (
 	"github.com/80LK/godev/internal/pipeline"
-	"github.com/80LK/godev/internal/pipeline/actions"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/project"
 	"github.com/spf13/cobra"
+
+	fsAct "github.com/80LK/godev/internal/pipeline/actions/fs"
+	gitAct "github.com/80LK/godev/internal/pipeline/actions/git"
+	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
 )
 
 var IntCmd = &cobra.Command{
@@ -27,26 +30,28 @@ var IntCmd = &cobra.Command{
 		}
 
 		pl := pipeline.New().Add(
-			actions.CheckNotExists{Path: project.GetGoProjectFile(ctx.ProjectDir)},
-			actions.CheckExistsFile{Path: project.GetGoModFile(ctx.ProjectDir)},
+			fsAct.CheckNotExists{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+			fsAct.CheckExistsFile{Path: project.GetGoModFile(ctx.ProjectDir)},
+			gitAct.CheckClearGit{},
 
-			actions.InitProjectContext{},
+			projectAct.InitProjectContext{},
 
-			actions.IntMod{},
-			actions.IntProject{
+			projectAct.IntMod{},
+			projectAct.IntProject{
 				Author: author,
 			},
 		)
 
 		if version != "" {
-			pl.Add(actions.VersionSet{Value: version})
+			pl.Add(projectAct.VersionSet{Value: version})
 		}
 
 		return pl.Add(
-			actions.EncodeGoMod{},
-			actions.EncodeGoProject{},
+			projectAct.EncodeGoMod{},
+			projectAct.EncodeGoProject{},
 
-			actions.GitInit{},
+			gitAct.GitInit{},
+			gitAct.GitCommit{Value: "integrate tool god"},
 		).Execute(ctx)
 	},
 }

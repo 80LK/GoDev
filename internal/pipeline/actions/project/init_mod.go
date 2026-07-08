@@ -26,7 +26,6 @@ func (f InitMod) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	ctx.Mod = new(modfile.File)
 	ctx.Mod.AddModuleStmt(ctx.GoProject.Project.GetGoModStmt())
 	ctx.Mod.AddGoStmt(ctx.GoVer.StringWithoutSuffix())
-	ctx.Mod.AddNewRequire(TOOL_PATH, TOOL_VERSION, true)
 	ctx.Mod.AddTool(TOOL_PATH)
 
 	return nil, nil
