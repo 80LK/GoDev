@@ -13,6 +13,8 @@ import (
 	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
 )
 
+var release bool
+
 var VersionCmd = &cobra.Command{
 	Use:   "version <patch|minor|major>",
 	Short: "Bump version in go.project",
@@ -53,6 +55,10 @@ Args:
 			gitAct.GitCommit{InputKey: "old_version"},
 		)
 
+		if release {
+			pl.Add(gitAct.GitTagVersion{})
+		}
+
 		return pl.Execute(ctx)
 	},
 }
@@ -72,14 +78,20 @@ Args:
 
 		ctx := context.New(dryRun)
 
-		return pipeline.New().Add(
+		pl := pipeline.New().Add(
 			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
 			gitAct.CheckClearGit{},
 			projectAct.InitProjectContext{},
 			projectAct.VersionSetPre{OldVersionKey: "old_version", Value: args[0]},
 			projectAct.EncodeGoProject{},
 			gitAct.GitCommit{InputKey: "old_version"},
-		).Execute(ctx)
+		)
+
+		if release {
+			pl.Add(gitAct.GitTagVersion{})
+		}
+
+		return pl.Execute(ctx)
 	},
 }
 
@@ -98,7 +110,7 @@ Args:
 
 		ctx := context.New(dryRun)
 
-		return pipeline.New().Add(
+		pl := pipeline.New().Add(
 			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
 			gitAct.CheckClearGit{},
 			projectAct.InitProjectContext{},
@@ -106,12 +118,18 @@ Args:
 			projectAct.EncodeGoProject{},
 			projectAct.PatchSources{OldVersionKey: "old_version"},
 			gitAct.GitCommit{InputKey: "old_version"},
-		).Execute(ctx)
+		)
+
+		if release {
+			pl.Add(gitAct.GitTagVersion{})
+		}
+		return pl.Execute(ctx)
 	},
 }
 
 func init() {
 	VersionCmd.Flags().StringP("pre", "p", "", "Set pre-release tag")
+	VersionCmd.PersistentFlags().BoolVarP(&release, "release", "r", false, "add git tag for release")
 	VersionCmd.AddCommand(
 		VersionSetCmd,
 		VersionPreCmd,
