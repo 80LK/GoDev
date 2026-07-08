@@ -58,5 +58,8 @@ If you have found a bug or have a feature request, please open an issue before s
 
 ## License
 
-This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
-See the [LICENSE](./LICENSE) and [NOTICE](./NOTICE) file for details.
+GoDev is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
+
+See the [LICENSE](./LICENSE) file for the full license text.
+
+Project branding, including the GoDev name and logo, is described in the [NOTICE](./NOTICE) file and is not covered by the AGPL-3.0 license.
