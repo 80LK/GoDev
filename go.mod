@@ -14,7 +14,3 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.9 // indirect
 )
-
-tool github.com/80LK/godev/cmd/god
-
-replace github.com/80LK/godev/cmd/god v0.0.0 => ./
