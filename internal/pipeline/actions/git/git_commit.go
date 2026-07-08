@@ -14,9 +14,9 @@ type GitCommit struct {
 
 func (g GitCommit) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	if g.InputKey != "" {
-		if _v, ok := context.Get[string](ctx, g.Value); ok {
+		if _v, ok := context.Get[string](ctx, g.InputKey); ok {
 			g.Value = _v
-		} else if _v, ok := context.Get[fmt.Stringer](ctx, g.Value); ok {
+		} else if _v, ok := context.Get[fmt.Stringer](ctx, g.InputKey); ok {
 			g.Value = _v.String()
 		}
 	}
