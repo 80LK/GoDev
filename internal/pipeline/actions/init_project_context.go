@@ -4,8 +4,8 @@ import (
 	"os"
 
 	"github.com/80LK/godev/internal/pipeline/context"
+	"github.com/80LK/godev/internal/pipeline/patches"
 
-	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/project"
 	"github.com/80LK/godev/internal/utils"
 
@@ -17,7 +17,7 @@ type InitProjectContext struct{}
 
 func (a InitProjectContext) Plan(
 	ctx *context.Context,
-) ([]pipeline.Patch, error) {
+) ([]patches.Patch, error) {
 	goProjectFile := project.GetGoProjectFile(ctx.ProjectDir)
 	exsist, err := utils.ExsistFile(goProjectFile)
 	if err != nil {

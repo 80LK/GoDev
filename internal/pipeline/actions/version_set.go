@@ -2,8 +2,7 @@ package actions
 
 import (
 	"github.com/80LK/godev/internal/pipeline/context"
-
-	"github.com/80LK/godev/internal/pipeline"
+	"github.com/80LK/godev/internal/pipeline/patches"
 )
 
 type VersionSet struct {
@@ -11,7 +10,7 @@ type VersionSet struct {
 	Value         string
 }
 
-func (v VersionSet) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
+func (v VersionSet) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	if v.OldVersionKey != "" {
 		context.Set(ctx, v.OldVersionKey, ctx.GoProject.Project.Version.Clone())
 	}

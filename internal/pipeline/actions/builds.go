@@ -1,20 +1,19 @@
 package actions
 
 import (
-	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/pipeline/patches"
 )
 
 type Builds struct{}
 
-func (b Builds) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
+func (b Builds) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	if ctx.GoProject.Builds == nil {
 		return nil, nil
 	}
 
 	ptchs := patches.ParallelPatch{
-		Items: make([]pipeline.Patch, len(ctx.GoProject.Builds)),
+		Items: make([]patches.Patch, len(ctx.GoProject.Builds)),
 	}
 
 	for i, build := range ctx.GoProject.Builds {
@@ -29,7 +28,7 @@ func (b Builds) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 		}
 	}
 
-	return []pipeline.Patch{
+	return []patches.Patch{
 		ptchs,
 	}, nil
 }

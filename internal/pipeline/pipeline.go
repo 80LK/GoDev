@@ -3,43 +3,23 @@ package pipeline
 import (
 	"fmt"
 
+	"github.com/80LK/godev/internal/pipeline/actions"
 	"github.com/80LK/godev/internal/pipeline/context"
+	"github.com/80LK/godev/internal/pipeline/patches"
 )
 
 type Pipeline struct {
-	actions []Action
+	actions.Pipeline
 }
 
 func New() *Pipeline {
-	return &Pipeline{
-		actions: make([]Action, 0, 4),
-	}
+	p := &Pipeline{}
+	p.Actions = make([]actions.Action, 0, 4)
+	return p
 }
 
-func (p Pipeline) Plan(
-	ctx *context.Context,
-) ([]Patch, error) {
-
-	var patches []Patch
-
-	for _, action := range p.actions {
-
-		actionPatches, err := action.Plan(ctx)
-		if err != nil {
-			return nil, err
-		}
-
-		patches = append(
-			patches,
-			actionPatches...,
-		)
-	}
-
-	return patches, nil
-}
-
-func (p *Pipeline) Add(actions ...Action) *Pipeline {
-	p.actions = append(p.actions, actions...)
+func (p *Pipeline) Add(actions ...actions.Action) *Pipeline {
+	p.Pipeline.Add(actions...)
 	return p
 }
 
@@ -57,7 +37,7 @@ func (p *Pipeline) Execute(ctx *context.Context) error {
 }
 
 func dryRun(
-	patches []Patch,
+	patches []patches.Patch,
 ) error {
 	i := 1
 	for _, patch := range patches {
@@ -81,7 +61,7 @@ func dryRun(
 }
 
 func apply(
-	patches []Patch,
+	patches []patches.Patch,
 ) error {
 
 	for _, patch := range patches {
@@ -91,14 +71,4 @@ func apply(
 	}
 
 	return nil
-}
-
-type Action interface {
-	Plan(*context.Context) ([]Patch, error)
-}
-
-type Patch interface {
-	Apply() error
-	Diff() (string, error)
-	Summary() string
 }

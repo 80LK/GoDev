@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/pipeline/patches"
 )
 
 type GitTagVersion struct{}
 
-func (g GitTagVersion) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
+func (g GitTagVersion) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	tag := ctx.GoProject.Project.Version.String()
 
 	cmd := exec.Command("git", "rev-parse", "-q", "--verify", "refs/tags/"+tag)
@@ -25,7 +24,7 @@ func (g GitTagVersion) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 	_e, ok := errors.AsType[*exec.ExitError](err)
 	if ok {
 		if _e.ExitCode() == 1 {
-			return []pipeline.Patch{
+			return []patches.Patch{
 				patches.ShellPatch{
 					Command: "git",
 					Args: []string{

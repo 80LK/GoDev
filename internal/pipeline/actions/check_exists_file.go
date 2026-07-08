@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/80LK/godev/internal/pipeline/context"
+	"github.com/80LK/godev/internal/pipeline/patches"
 
-	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/utils"
 )
 
@@ -14,7 +14,7 @@ type CheckExistsFile struct {
 	Error string
 }
 
-func (a CheckExistsFile) Plan(*context.Context) ([]pipeline.Patch, error) {
+func (a CheckExistsFile) Plan(*context.Context) ([]patches.Patch, error) {
 	if a.Error == "" {
 		a.Error = "%s not exists"
 	}

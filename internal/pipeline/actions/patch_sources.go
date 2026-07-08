@@ -11,7 +11,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/pipeline/patches"
 	"github.com/80LK/godev/internal/version"
@@ -21,7 +20,7 @@ type PatchSources struct {
 	OldVersionKey string
 }
 
-func (p PatchSources) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
+func (p PatchSources) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	if ctx.GoProject.Project.Version.Major < 2 {
 		return nil, nil
 	}
@@ -53,7 +52,7 @@ func (p PatchSources) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
 
 	// patch *.go
 	parallelPatch := &patches.ParallelPatch{
-		Items: make([]pipeline.Patch, 0, 10),
+		Items: make([]patches.Patch, 0, 10),
 	}
 	patchs = append(patchs, parallelPatch)
 	err = filepath.WalkDir(ctx.ProjectDir, func(path string, d fs.DirEntry, err error) error {

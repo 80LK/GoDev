@@ -6,7 +6,6 @@ import (
 
 	"github.com/80LK/godev/internal/pipeline/context"
 
-	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/patches"
 )
 
@@ -21,7 +20,7 @@ type WriteFile struct {
 
 func (a WriteFile) Plan(
 	ctx *context.Context,
-) ([]pipeline.Patch, error) {
+) ([]patches.Patch, error) {
 
 	if a.Value == nil && a.InputKey == "" {
 		return nil, fmt.Errorf("No such data")
@@ -46,7 +45,7 @@ func (a WriteFile) Plan(
 
 	oldData, _ := os.ReadFile(a.Path)
 
-	return []pipeline.Patch{
+	return []patches.Patch{
 		patches.NewWriteFilePatch(
 			a.Path,
 			oldData,

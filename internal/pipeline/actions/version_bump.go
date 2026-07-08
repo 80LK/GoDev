@@ -5,8 +5,7 @@ import (
 	"strings"
 
 	"github.com/80LK/godev/internal/pipeline/context"
-
-	"github.com/80LK/godev/internal/pipeline"
+	"github.com/80LK/godev/internal/pipeline/patches"
 )
 
 type Bump string
@@ -41,7 +40,7 @@ type VersionBump struct {
 	Value         Bump
 }
 
-func (v VersionBump) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
+func (v VersionBump) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	if v.Value == "" {
 		return nil, ErrBump
 	}

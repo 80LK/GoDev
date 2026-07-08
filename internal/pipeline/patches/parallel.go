@@ -4,15 +4,22 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/80LK/godev/internal/pipeline"
 	"golang.org/x/sync/errgroup"
 )
 
 type ParallelPatch struct {
-	Items []pipeline.Patch
+	Items []Patch
 }
 
 func (p ParallelPatch) Apply() error {
+	l := len(p.Items)
+	switch l {
+	case 0:
+		return nil
+	case 1:
+		return p.Items[0].Apply()
+	}
+
 	var g errgroup.Group
 
 	for _, item := range p.Items {
@@ -29,8 +36,12 @@ func (p ParallelPatch) Diff() (string, error) {
 }
 
 func (p ParallelPatch) Summary() string {
-	if len(p.Items) == 0 {
+	l := len(p.Items)
+	switch l {
+	case 0:
 		return ""
+	case 1:
+		return p.Items[0].Summary()
 	}
 
 	var str strings.Builder

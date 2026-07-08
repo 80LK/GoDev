@@ -5,7 +5,6 @@ import (
 
 	"github.com/80LK/godev/internal/pipeline/context"
 
-	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/patches"
 	"github.com/80LK/godev/internal/utils"
 )
@@ -17,7 +16,7 @@ type EnsureDir struct {
 
 func (a EnsureDir) Plan(
 	ctx *context.Context,
-) ([]pipeline.Patch, error) {
+) ([]patches.Patch, error) {
 
 	ok, err := utils.ExsistDir(a.Path)
 	if err != nil {
@@ -28,7 +27,7 @@ func (a EnsureDir) Plan(
 		return nil, nil
 	}
 
-	return []pipeline.Patch{
+	return []patches.Patch{
 		patches.CreateDirPatch{
 			Path: a.Path,
 			Perm: a.Perm,

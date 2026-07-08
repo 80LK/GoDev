@@ -6,7 +6,6 @@ import (
 
 	"github.com/80LK/godev/internal/pipeline/context"
 
-	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/patches"
 	"github.com/80LK/godev/internal/project"
 )
@@ -16,7 +15,7 @@ type EncodeGoMod struct {
 
 func (a EncodeGoMod) Plan(
 	ctx *context.Context,
-) ([]pipeline.Patch, error) {
+) ([]patches.Patch, error) {
 
 	if ctx.Mod == nil {
 		return nil,
@@ -33,7 +32,7 @@ func (a EncodeGoMod) Plan(
 	path := project.GetGoModFile(ctx.ProjectDir)
 	oldData, _ := os.ReadFile(path)
 
-	return []pipeline.Patch{
+	return []patches.Patch{
 		patches.NewWriteFilePatch(
 			path,
 			oldData,

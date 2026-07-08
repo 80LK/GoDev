@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/context"
+	"github.com/80LK/godev/internal/pipeline/patches"
 )
 
 type CheckClearGit struct{}
 
-func (c CheckClearGit) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
+func (c CheckClearGit) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	cmd := exec.Command("git", "status", "--porcelain")
 	cmd.Dir = ctx.ProjectDir
 

@@ -2,8 +2,8 @@ package actions
 
 import (
 	"github.com/80LK/godev/internal/pipeline/context"
+	"github.com/80LK/godev/internal/pipeline/patches"
 
-	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/project"
 )
 
@@ -11,7 +11,7 @@ type IntProject struct {
 	Author string
 }
 
-func (i IntProject) Plan(ctx *context.Context) ([]pipeline.Patch, error) {
+func (i IntProject) Plan(ctx *context.Context) ([]patches.Patch, error) {
 
 	if ctx.GoProject == nil {
 		ctx.GoProject = project.New()
