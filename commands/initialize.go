@@ -10,6 +10,7 @@ import (
 
 	fsAct "github.com/80LK/godev/internal/pipeline/actions/fs"
 	gitAct "github.com/80LK/godev/internal/pipeline/actions/git"
+	goAct "github.com/80LK/godev/internal/pipeline/actions/go"
 	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
 
 	"github.com/spf13/cobra"
@@ -86,6 +87,7 @@ Args:
 			},
 
 			gitAct.GitInit{},
+			goAct.Tidy{},
 			gitAct.GitCommit{Value: "init commit"},
 		).Execute(ctx)
 	},

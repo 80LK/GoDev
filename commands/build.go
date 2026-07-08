@@ -2,6 +2,7 @@ package commands
 
 import (
 	"github.com/80LK/godev/internal/pipeline"
+	goAct "github.com/80LK/godev/internal/pipeline/actions/go"
 	project "github.com/80LK/godev/internal/pipeline/actions/project"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/spf13/cobra"
@@ -16,7 +17,7 @@ var BuildCmd = &cobra.Command{
 
 		return pipeline.New().Add(
 			project.InitProjectContext{},
-			project.Builds{},
+			goAct.Builds{},
 		).Execute(ctx)
 	},
 }

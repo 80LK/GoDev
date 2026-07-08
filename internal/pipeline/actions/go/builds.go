@@ -25,6 +25,7 @@ func (b Builds) Plan(ctx *context.Context) ([]patches.Patch, error) {
 				build.Output,
 				build.Input,
 			},
+			WorkDir: ctx.ProjectDir,
 		}
 	}
 

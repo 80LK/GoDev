@@ -8,6 +8,7 @@ import (
 
 	fsAct "github.com/80LK/godev/internal/pipeline/actions/fs"
 	gitAct "github.com/80LK/godev/internal/pipeline/actions/git"
+	goAct "github.com/80LK/godev/internal/pipeline/actions/go"
 	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
 )
 
@@ -51,6 +52,7 @@ var IntCmd = &cobra.Command{
 			projectAct.EncodeGoProject{},
 
 			gitAct.GitInit{},
+			goAct.Tidy{},
 			gitAct.GitCommit{Value: "integrate tool god"},
 		).Execute(ctx)
 	},
