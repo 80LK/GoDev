@@ -29,10 +29,12 @@ func (g GitCommit) Plan(ctx *context.Context) ([]patches.Patch, error) {
 		patches.ShellPatch{
 			Command: "git",
 			Args:    []string{"add", "."},
+			WorkDir: ctx.ProjectDir,
 		},
 		patches.ShellPatch{
 			Command: "git",
 			Args:    []string{"commit", "-m", g.Value},
+			WorkDir: ctx.ProjectDir,
 		},
 	}, nil
 }
