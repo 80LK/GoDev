@@ -19,6 +19,7 @@ var BuildCmd = &cobra.Command{
 		if len(args) == 1 {
 			target = args[0]
 		}
+
 		return pipeline.New().Add(
 			project.InitProjectContext{},
 			goAct.Builds{

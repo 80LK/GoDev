@@ -2,13 +2,56 @@ package actions
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/pipeline/patches"
+	"github.com/80LK/godev/internal/project"
 )
 
 type Builds struct {
 	Target string
+}
+
+func appendBoolFlag(args []string, enabled bool, flag string) []string {
+	if enabled {
+		return append(args, flag)
+	}
+
+	return args
+}
+
+func appendListFlag(args []string, list []string, flag string, join string) []string {
+	if len(list) > 0 {
+		return append(args, flag+"="+strings.Join(list, join))
+	}
+
+	return args
+}
+
+func buildShell(buildInfo *project.BuildInfo, wd string) patches.ShellPatch {
+	patch := patches.ShellPatch{
+		WorkDir: wd,
+		Command: "go",
+		Args: []string{
+			"build",
+		},
+	}
+
+	patch.Args = appendBoolFlag(patch.Args, buildInfo.Race, "-race")
+	patch.Args = appendBoolFlag(patch.Args, buildInfo.Trimpath, "-trimpath")
+
+	patch.Args = appendListFlag(patch.Args, buildInfo.Tags, "-tags", ",")
+	patch.Args = appendListFlag(patch.Args, buildInfo.LdFlags, "-ldflags", " ")
+	patch.Args = appendListFlag(patch.Args, buildInfo.GcFlags, "-gcflags", " ")
+
+	patch.Args = append(patch.Args,
+		"-o",
+		buildInfo.Output,
+		buildInfo.Input,
+	)
+
+	return patch
 }
 
 func (b Builds) Plan(ctx *context.Context) ([]patches.Patch, error) {
@@ -23,16 +66,7 @@ func (b Builds) Plan(ctx *context.Context) ([]patches.Patch, error) {
 
 		i := 0
 		for _, build := range ctx.GoProject.Builds {
-			ptchs.Items[i] = patches.ShellPatch{
-				Command: "go",
-				Args: []string{
-					"build",
-					"-o",
-					build.Output,
-					build.Input,
-				},
-				WorkDir: ctx.ProjectDir,
-			}
+			ptchs.Items[i] = buildShell(build, ctx.ProjectDir)
 			i++
 		}
 
@@ -47,15 +81,6 @@ func (b Builds) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	}
 
 	return []patches.Patch{
-		patches.ShellPatch{
-			Command: "go",
-			Args: []string{
-				"build",
-				"-o",
-				build.Output,
-				build.Input,
-			},
-			WorkDir: ctx.ProjectDir,
-		},
+		buildShell(build, ctx.ProjectDir),
 	}, nil
 }

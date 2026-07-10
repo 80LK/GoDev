@@ -9,4 +9,5 @@ project (
 build main (
 	input "./cmd/god/god.go"
 	output "./dist/god.exe"
+	trimpath true
 )
