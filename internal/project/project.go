@@ -29,6 +29,8 @@ func (p *ProjectInfo) GetGoModStmt() string {
 type GoProject struct {
 	Project *ProjectInfo `modlike:"project"`
 
+	Meta bool `modlike:"meta"`
+
 	Builds map[string]*BuildInfo `modlike:"build"`
 }
 

@@ -6,6 +6,8 @@ project (
 	author 80LK
 )
 
+meta true
+
 build main (
 	input "./cmd/god/god.go"
 	output "./dist/god.exe"
