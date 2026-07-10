@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/80lk/modlike"
+	"github.com/80LK/modlike"
 )
 
 type Version struct {

@@ -9,7 +9,7 @@ import (
 	"github.com/80LK/godev/internal/project"
 	"github.com/80LK/godev/internal/utils"
 
-	"github.com/80lk/modlike"
+	"github.com/80LK/modlike"
 	"golang.org/x/mod/modfile"
 )
 
