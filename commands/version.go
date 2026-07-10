@@ -51,6 +51,7 @@ Args:
 		}
 		pl.Add(
 			projectAct.InitProjectContext{},
+			projectAct.RunScript{IgnoreNotFound: true, Name: project.LifecycleName(project.PhaseBefore, "version")},
 			projectAct.VersionBump{OldVersionKey: "old_version", NewVersionKey: "new_version", Value: bump},
 		)
 		if pre != "" {
@@ -75,6 +76,7 @@ Args:
 		if !noCommit && release {
 			pl.Add(gitAct.GitTagVersion{})
 		}
+		pl.Add(projectAct.RunScript{IgnoreNotFound: true, Name: project.LifecycleName(project.PhaseAfter, "version")})
 
 		return pl.Execute(ctx)
 	},

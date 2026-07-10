@@ -15,7 +15,7 @@ type RunScript struct {
 }
 
 func parseScriptInShellPatch(script *project.Script, workdir string, defaultScript *project.Script) (patches.Patch, error) {
-	if script.Command == "" {
+	if script.Command == nil {
 		return nil, fmt.Errorf("Command cant was been empty")
 	}
 
@@ -31,7 +31,7 @@ func parseScriptInShellPatch(script *project.Script, workdir string, defaultScri
 	}
 
 	return &patches.ShellPatch{
-		Command: script.Command,
+		Command: *script.Command,
 		Args:    script.Args,
 		WorkDir: workdir,
 		Env:     env,

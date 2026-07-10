@@ -20,7 +20,9 @@ var ReleaseCmd = &cobra.Command{
 
 		return pipeline.New().Add(
 			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+			gitAct.CheckClearGit{},
 			projectAct.InitProjectContext{},
+			projectAct.RunScript{IgnoreNotFound: true, Name: project.LifecycleName(project.PhaseBefore, "release")},
 			actions.ConditionAction{
 				Condition: func(ctx *context.Context) bool {
 					return ctx.GoProject.Meta
@@ -30,8 +32,8 @@ var ReleaseCmd = &cobra.Command{
 					gitAct.GitCommit{Value: "generate meta info"},
 				),
 			},
-			gitAct.CheckClearGit{},
 			gitAct.GitTagVersion{},
+			projectAct.RunScript{IgnoreNotFound: true, Name: project.LifecycleName(project.PhaseBefore, "release")},
 		).Execute(ctx)
 	},
 }
