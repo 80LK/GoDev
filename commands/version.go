@@ -13,7 +13,10 @@ import (
 	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
 )
 
-var release bool
+var (
+	release  bool
+	noCommit bool
+)
 
 var VersionCmd = &cobra.Command{
 	Use:   "version <patch|minor|major>",
@@ -41,7 +44,11 @@ Args:
 		ctx := context.New(dryRun)
 		pl := pipeline.New().Add(
 			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
-			gitAct.CheckClearGit{},
+		)
+		if !noCommit {
+			pl.Add(gitAct.CheckClearGit{})
+		}
+		pl.Add(
 			projectAct.InitProjectContext{},
 			projectAct.VersionBump{OldVersionKey: "old_version", NewVersionKey: "new_version", Value: bump},
 		)
@@ -52,10 +59,13 @@ Args:
 		pl.Add(
 			projectAct.EncodeGoProject{},
 			projectAct.PatchSources{OldVersionKey: "old_version"},
-			gitAct.GitCommit{InputKey: "new_version"},
 		)
 
-		if release {
+		if !noCommit {
+			pl.Add(gitAct.GitCommit{InputKey: "new_version"})
+		}
+
+		if !noCommit && release {
 			pl.Add(gitAct.GitTagVersion{})
 		}
 
@@ -80,14 +90,22 @@ Args:
 
 		pl := pipeline.New().Add(
 			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
-			gitAct.CheckClearGit{},
+		)
+
+		if !noCommit {
+			pl.Add(gitAct.CheckClearGit{})
+		}
+
+		pl.Add(
 			projectAct.InitProjectContext{},
 			projectAct.VersionSetPre{OldVersionKey: "old_version", NewVersionKey: "new_version", Value: args[0]},
 			projectAct.EncodeGoProject{},
-			gitAct.GitCommit{InputKey: "new_version"},
 		)
+		if !noCommit {
+			pl.Add(gitAct.GitCommit{InputKey: "new_version"})
+		}
 
-		if release {
+		if !noCommit && release {
 			pl.Add(gitAct.GitTagVersion{})
 		}
 
@@ -112,15 +130,22 @@ Args:
 
 		pl := pipeline.New().Add(
 			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
-			gitAct.CheckClearGit{},
+		)
+		if !noCommit {
+			pl.Add(gitAct.CheckClearGit{})
+		}
+		pl.Add(
 			projectAct.InitProjectContext{},
 			projectAct.VersionSet{OldVersionKey: "old_version", NewVersionKey: "new_version", Value: args[0]},
 			projectAct.EncodeGoProject{},
 			projectAct.PatchSources{OldVersionKey: "old_version"},
-			gitAct.GitCommit{InputKey: "new_version"},
 		)
 
-		if release {
+		if !noCommit {
+			pl.Add(gitAct.GitCommit{InputKey: "new_version"})
+		}
+
+		if !noCommit && release {
 			pl.Add(gitAct.GitTagVersion{})
 		}
 		return pl.Execute(ctx)
@@ -130,6 +155,7 @@ Args:
 func init() {
 	VersionCmd.Flags().StringP("pre", "p", "", "Set pre-release tag")
 	VersionCmd.PersistentFlags().BoolVarP(&release, "release", "r", false, "add git tag for release")
+	VersionCmd.PersistentFlags().BoolVarP(&noCommit, "no-commit", "c", false, "change version without commit")
 	VersionCmd.AddCommand(
 		VersionSetCmd,
 		VersionPreCmd,

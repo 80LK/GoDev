@@ -1,14 +1,12 @@
 
 project (
 	name godev
-	version 0.1.4
+	version 0.1.5
 	module github.com/80LK/godev
 	author 80LK
 )
 
-build (
-	(
-		input "./cmd/god/god.go"
-		output "./dist/god.exe"
-	)
+build main (
+	input "./cmd/god/god.go"
+	output "./dist/god.exe"
 )

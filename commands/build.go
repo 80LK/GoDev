@@ -9,15 +9,21 @@ import (
 )
 
 var BuildCmd = &cobra.Command{
-	Use:   "build",
-	Short: "short desc",
-	Long:  "long desc",
+	Use:   "build <target>",
+	Short: "build target",
+	Long:  `Build target sources. If target not set, build all`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.New(dryRun)
+		target := ""
 
+		if len(args) == 1 {
+			target = args[0]
+		}
 		return pipeline.New().Add(
 			project.InitProjectContext{},
-			goAct.Builds{},
+			goAct.Builds{
+				Target: target,
+			},
 		).Execute(ctx)
 	},
 }
