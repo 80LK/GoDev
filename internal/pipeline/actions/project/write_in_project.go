@@ -7,12 +7,12 @@ import (
 	"github.com/80LK/godev/internal/project"
 )
 
-type InitProject struct {
+type WriteInProject struct {
 	ModuleName string
 	Author     string
 }
 
-func (f InitProject) Plan(ctx *context.Context) ([]patches.Patch, error) {
+func (f WriteInProject) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	if ctx.GoProject != nil {
 		return nil, nil
 	}

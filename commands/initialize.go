@@ -58,23 +58,21 @@ Args:
 		}
 
 		pl := pipeline.New()
-		if force {
-			pl.Add(fsAct.EnsureDir{Path: ctx.ProjectDir, Perm: 0777})
-		} else {
-			pl.Add(fsAct.EnsureEmptyDir{Path: ctx.ProjectDir, Perm: 0777})
+		if !force {
+			pl.Add(
+				fsAct.EnsureEmptyDir{Path: ctx.ProjectDir, Perm: 0777},
+				fsAct.CheckNotExists{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+				fsAct.CheckNotExists{Path: project.GetGoModFile(ctx.ProjectDir)},
+			)
 		}
 
 		pl.Add(
-			fsAct.CheckNotExists{Path: project.GetGoProjectFile(ctx.ProjectDir)},
-			fsAct.CheckNotExists{Path: project.GetGoModFile(ctx.ProjectDir)},
-
 			projectAct.InitProjectContext{},
 
-			projectAct.InitProject{
+			projectAct.WriteInProject{
 				ModuleName: moduleName,
 				Author:     author,
 			},
-			projectAct.InitMod{},
 		)
 
 		if version != "" {

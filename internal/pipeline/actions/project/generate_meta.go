@@ -13,7 +13,7 @@ import (
 	"github.com/80LK/godev/internal/pipeline/patches"
 )
 
-//go:embed generate_meta.tpl
+//go:embed templates/generated.go.tpl
 var templateMetaSource string
 
 type _GenerateMeta struct {
