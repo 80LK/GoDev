@@ -22,7 +22,6 @@ var _FILES = []struct {
 	Rewrite bool
 }{
 	{File: "meta.go"},
-	{File: "default.go"},
 	{File: "generated.go", Rewrite: true},
 }
 
