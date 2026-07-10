@@ -29,7 +29,7 @@ go install github.com/80LK/godev/cmd/god@latest
 Verify the installation:
 
 ```bash
-god --help
+god --version
 ```
 
 ## Getting Started

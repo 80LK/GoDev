@@ -41,7 +41,7 @@ func buildShell(buildInfo *project.BuildInfo, wd string) patches.ShellPatch {
 	patch.Args = appendBoolFlag(patch.Args, buildInfo.Race, "-race")
 	patch.Args = appendBoolFlag(patch.Args, buildInfo.Trimpath, "-trimpath")
 
-	patch.Args = appendListFlag(patch.Args, buildInfo.Tags, "-tags", ",")
+	patch.Args = appendListFlag(patch.Args, append(buildInfo.Tags, "god"), "-tags", ",")
 	patch.Args = appendListFlag(patch.Args, buildInfo.LdFlags, "-ldflags", " ")
 	patch.Args = appendListFlag(patch.Args, buildInfo.GcFlags, "-gcflags", " ")
 

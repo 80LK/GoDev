@@ -1,6 +1,7 @@
 package patches
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -32,7 +33,11 @@ func (p ShellPatch) Apply() error {
 		cmd.Stderr = os.Stderr
 	}
 
-	return cmd.Run()
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("Error shell %q: %s", p.Command+" "+strings.Join(p.Args, " "), err)
+	}
+
+	return nil
 }
 
 func (p ShellPatch) Summary(ctx *context.Context) (string, error) {

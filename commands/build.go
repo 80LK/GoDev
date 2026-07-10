@@ -20,8 +20,14 @@ var BuildCmd = &cobra.Command{
 			target = args[0]
 		}
 
+		generateMeta, err := project.NewGenerateMeta()
+		if err != nil {
+			return err
+		}
+
 		return pipeline.New().Add(
 			project.InitProjectContext{},
+			generateMeta,
 			goAct.Builds{
 				Target: target,
 			},
