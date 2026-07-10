@@ -1,7 +1,7 @@
 
 project (
 	name godev
-	version 0.1.5
+	version 0.1.6
 	module github.com/80LK/godev
 	author 80LK
 )
@@ -10,4 +10,5 @@ build main (
 	input "./cmd/god/god.go"
 	output "./dist/god.exe"
 	trimpath true
+	race false
 )
