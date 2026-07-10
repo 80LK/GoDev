@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"slices"
 	"strings"
 
 	"github.com/80LK/godev/internal/pipeline/patches/context"
@@ -13,7 +14,9 @@ type ShellPatch struct {
 	Command string
 	Args    []string
 	WorkDir string
-	Stdout  bool
+	Env     []string
+
+	Stdout bool
 }
 
 func (p ShellPatch) Apply() error {
@@ -26,6 +29,15 @@ func (p ShellPatch) Apply() error {
 
 	if p.WorkDir != "" {
 		cmd.Dir = p.WorkDir
+	}
+
+	if p.Env != nil {
+		cmd.Env = slices.Concat(
+			os.Environ(),
+			p.Env,
+		)
+	} else {
+		cmd.Env = os.Environ()
 	}
 
 	if p.Stdout {

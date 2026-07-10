@@ -6,11 +6,38 @@ import (
 
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/pipeline/patches"
+	"github.com/80LK/godev/internal/project"
 )
 
 type RunScript struct {
 	Name           string
 	IgnoreNotFound bool
+}
+
+func parseScriptInShellPatch(script *project.Script, workdir string, defaultScript *project.Script) (patches.Patch, error) {
+	if script.Command == "" {
+		return nil, fmt.Errorf("Command cant was been empty")
+	}
+
+	if script.WorkDir != nil {
+		workdir = filepath.Clean(filepath.Join(workdir, *script.WorkDir))
+	} else if defaultScript != nil && defaultScript.WorkDir != nil {
+		workdir = filepath.Clean(filepath.Join(workdir, *defaultScript.WorkDir))
+	}
+
+	var env []string = script.Env
+	if len(env) == 0 && defaultScript != nil {
+		env = defaultScript.Env
+	}
+
+	return &patches.ShellPatch{
+		Command: script.Command,
+		Args:    script.Args,
+		WorkDir: workdir,
+		Env:     env,
+
+		Stdout: true,
+	}, nil
 }
 
 func (r RunScript) Plan(ctx *context.Context) ([]patches.Patch, error) {
@@ -23,22 +50,23 @@ func (r RunScript) Plan(ctx *context.Context) ([]patches.Patch, error) {
 		}
 	}
 
-	workdir := ctx.ProjectDir
-	if script.WorkDir != nil {
-		workdir = filepath.Clean(filepath.Join(workdir, *script.WorkDir))
+	if len(script.Commands) == 0 {
+		patch, err := parseScriptInShellPatch(script.Script, ctx.ProjectDir, nil)
+		if err != nil {
+			return nil, err
+		}
+		return []patches.Patch{patch}, nil
 	}
 
-	if len(script.Env) > 0 {
-		fmt.Printf("Env now ignored")
+	ptchs := []patches.Patch{}
+
+	for _, childScript := range script.Commands {
+		patch, err := parseScriptInShellPatch(childScript, ctx.ProjectDir, script.Script)
+		if err != nil {
+			return nil, err
+		}
+		ptchs = append(ptchs, patch)
 	}
 
-	return []patches.Patch{
-		patches.ShellPatch{
-			Command: script.Command,
-			Args:    script.Args,
-			WorkDir: workdir,
-
-			Stdout: true,
-		},
-	}, nil
+	return ptchs, nil
 }
