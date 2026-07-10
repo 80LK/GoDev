@@ -4,17 +4,16 @@ import (
 	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/actions"
 	fsAct "github.com/80LK/godev/internal/pipeline/actions/fs"
-	gitAct "github.com/80LK/godev/internal/pipeline/actions/git"
 	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/project"
 	"github.com/spf13/cobra"
 )
 
-var ReleaseCmd = &cobra.Command{
-	Use:   "release",
-	Short: "Set git tag for release",
-	Long:  "Set git tag for release",
+var MetaCmd = &cobra.Command{
+	Use:   "meta",
+	Short: "Generate meta-file",
+	Long:  "Generate meta-file",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.New(dryRun)
 
@@ -25,17 +24,12 @@ var ReleaseCmd = &cobra.Command{
 				Condition: func(ctx *context.Context) bool {
 					return ctx.GoProject.Meta
 				},
-				Action: pipeline.New().Add(
-					projectAct.GenerateMeta{},
-					gitAct.GitCommit{Value: "generate meta info"},
-				),
+				Action: projectAct.GenerateMeta{},
 			},
-			gitAct.CheckClearGit{},
-			gitAct.GitTagVersion{},
 		).Execute(ctx)
 	},
 }
 
 func init() {
-	Root.AddCommand(ReleaseCmd)
+	Root.AddCommand(MetaCmd)
 }

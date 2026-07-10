@@ -2,7 +2,6 @@ package commands
 
 import (
 	"github.com/80LK/godev/internal/pipeline"
-	"github.com/80LK/godev/internal/pipeline/actions"
 	goAct "github.com/80LK/godev/internal/pipeline/actions/go"
 	project "github.com/80LK/godev/internal/pipeline/actions/project"
 	"github.com/80LK/godev/internal/pipeline/context"
@@ -23,12 +22,6 @@ var BuildCmd = &cobra.Command{
 
 		return pipeline.New().Add(
 			project.InitProjectContext{},
-			actions.ConditionAction{
-				Condition: func(ctx *context.Context) bool {
-					return ctx.GoProject.Meta
-				},
-				Action: project.GenerateMeta{},
-			},
 			goAct.Builds{Target: target},
 		).Execute(ctx)
 	},
