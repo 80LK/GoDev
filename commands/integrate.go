@@ -45,6 +45,8 @@ var IntCmd = &cobra.Command{
 
 		if version != "" {
 			pl.Add(projectAct.VersionSet{Value: version})
+		} else {
+			pl.Add(projectAct.VersionLoadFromGit{})
 		}
 
 		return pl.Add(
