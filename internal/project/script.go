@@ -1,9 +1,9 @@
 package project
 
 type RootScript struct {
-	Command *string  `modlike:"command"`
+	Command string   `modlike:"command"`
 	Args    []string `modlike:"args"`
-	WorkDir *string  `modlike:"workdir"`
+	WorkDir string   `modlike:"workdir"`
 	Env     []string `modlike:"env"`
 
 	Commands []*Script `modlike:"commands"`
@@ -19,9 +19,9 @@ func (r RootScript) AsScript() *Script {
 }
 
 type Script struct {
-	Command *string  `modlike:"command"`
+	Command string   `modlike:"command"`
 	Args    []string `modlike:"args"`
-	WorkDir *string  `modlike:"workdir"`
+	WorkDir string   `modlike:"workdir"`
 	Env     []string `modlike:"env"`
 }
 

@@ -2,7 +2,6 @@ package actions
 
 import (
 	"fmt"
-	"log"
 	"path/filepath"
 
 	"github.com/80LK/godev/internal/pipeline/context"
@@ -16,14 +15,14 @@ type RunScript struct {
 }
 
 func parseScriptInShellPatch(script *project.Script, workdir string, defaultScript *project.Script) (patches.Patch, error) {
-	if script.Command == nil {
+	if script.Command == "" {
 		return nil, fmt.Errorf("Command cant was been empty")
 	}
 
-	if script.WorkDir != nil {
-		workdir = filepath.Clean(filepath.Join(workdir, *script.WorkDir))
-	} else if defaultScript != nil && defaultScript.WorkDir != nil {
-		workdir = filepath.Clean(filepath.Join(workdir, *defaultScript.WorkDir))
+	if script.WorkDir != "" {
+		workdir = filepath.Clean(filepath.Join(workdir, script.WorkDir))
+	} else if defaultScript != nil && defaultScript.WorkDir != "" {
+		workdir = filepath.Clean(filepath.Join(workdir, defaultScript.WorkDir))
 	}
 
 	var env []string = script.Env
@@ -32,7 +31,7 @@ func parseScriptInShellPatch(script *project.Script, workdir string, defaultScri
 	}
 
 	return &patches.ShellPatch{
-		Command: *script.Command,
+		Command: script.Command,
 		Args:    script.Args,
 		WorkDir: workdir,
 		Env:     env,
@@ -52,7 +51,6 @@ func (r RunScript) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	}
 
 	if len(script.Commands) == 0 {
-		log.Printf("Script: %+v\n", script)
 		patch, err := parseScriptInShellPatch(script.AsScript(), ctx.ProjectDir, nil)
 		if err != nil {
 			return nil, err

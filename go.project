@@ -1,7 +1,7 @@
 
 project (
 	name godev
-	version 0.1.9
+	version 0.1.10
 	module github.com/80LK/godev
 	author 80LK
 )
@@ -16,6 +16,11 @@ build main (
 )
 
 script test (
-	command echo
-	args "Hello World"
+	command cmd
+	args (
+		"/c"
+		echo
+		"Hello, World!"
+	)
+	workdir ""
 )
