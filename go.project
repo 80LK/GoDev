@@ -14,3 +14,8 @@ build main (
 	trimpath true
 	race false
 )
+
+script test (
+	command echo
+	args "Hello World"
+)

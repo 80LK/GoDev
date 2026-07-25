@@ -2,6 +2,7 @@ package actions
 
 import (
 	"fmt"
+	"log"
 	"path/filepath"
 
 	"github.com/80LK/godev/internal/pipeline/context"
@@ -51,7 +52,8 @@ func (r RunScript) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	}
 
 	if len(script.Commands) == 0 {
-		patch, err := parseScriptInShellPatch(script.Script, ctx.ProjectDir, nil)
+		log.Printf("Script: %+v\n", script)
+		patch, err := parseScriptInShellPatch(script.AsScript(), ctx.ProjectDir, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -61,7 +63,7 @@ func (r RunScript) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	ptchs := []patches.Patch{}
 
 	for _, childScript := range script.Commands {
-		patch, err := parseScriptInShellPatch(childScript, ctx.ProjectDir, script.Script)
+		patch, err := parseScriptInShellPatch(childScript, ctx.ProjectDir, script.AsScript())
 		if err != nil {
 			return nil, err
 		}
