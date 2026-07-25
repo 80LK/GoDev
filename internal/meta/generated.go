@@ -6,5 +6,5 @@ var meta = Meta{
 	Name:    "godev",
 	Version: "v0.1.10",
 	Author:  "80LK",
-	Module: "github.com/80LK/godev",
+	Module:  "github.com/80LK/godev",
 }

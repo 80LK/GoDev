@@ -28,8 +28,16 @@ var ReleaseCmd = &cobra.Command{
 					return ctx.GoProject.Meta
 				},
 				Action: pipeline.New().Add(
-					projectAct.GenerateMeta{},
-					gitAct.GitCommit{Value: "generate meta info"},
+					projectAct.GenerateMeta{
+						ContextKey: "generated",
+					},
+					actions.ConditionAction{
+						Condition: func(ctx *context.Context) bool {
+							res, _ := context.Get[bool](ctx, "generated")
+							return res
+						},
+						Action: gitAct.GitCommit{Value: "generate meta info"},
+					},
 				),
 			},
 			gitAct.GitTagVersion{},

@@ -6,5 +6,5 @@ var meta = Meta{
 	Name:    {{ printf "%q" .Name }},
 	Version: {{ printf "%q" .Version }},
 	Author:  {{ printf "%q" .Author }},
-	Module: {{ printf "%q" .Module }},
+	Module:  {{ printf "%q" .Module }},
 }

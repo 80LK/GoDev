@@ -50,9 +50,17 @@ func (p writeFilePatch) Summary(ctx *context.Context) (string, error) {
 
 	ctx = context.Get(ctx)
 
+	aLines := difflib.SplitLines(string(p.OldData))
+	bLines := difflib.SplitLines(string(p.NewData))
+
+	m := difflib.NewMatcher(aLines, bLines)
+	if m.Ratio() == 1 {
+		return "", nil
+	}
+
 	diff := difflib.UnifiedDiff{
-		A: difflib.SplitLines(string(p.OldData)),
-		B: difflib.SplitLines(string(p.NewData)),
+		A: aLines,
+		B: bLines,
 
 		FromFile: p.Path,
 		ToFile:   p.Path,
@@ -67,16 +75,19 @@ func (p writeFilePatch) Summary(ctx *context.Context) (string, error) {
 
 	lines := difflib.SplitLines(diffS)
 	var str strings.Builder
-	str.WriteString(ctx.GetPrefix() + ctx.GetCounter())
+	str.WriteString(ctx.GetPrefix())
+	str.WriteString(ctx.GetCounter())
 	if len(p.OldData) == 0 {
 		str.WriteString("create file ")
 	} else {
 		str.WriteString("modify file ")
 	}
-	str.WriteString(p.Path + "\n")
+	str.WriteString(p.Path)
+	str.WriteRune('\n')
 
 	for _, line := range lines {
-		str.WriteString(ctx.GetPrefix() + line)
+		str.WriteString(ctx.GetPrefix())
+		str.WriteString(line)
 	}
 
 	return str.String(), nil

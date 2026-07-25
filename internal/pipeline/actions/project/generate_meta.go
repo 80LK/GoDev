@@ -3,6 +3,7 @@ package actions
 import (
 	"bytes"
 	"embed"
+	"os"
 	"path"
 	"path/filepath"
 	"text/template"
@@ -10,6 +11,7 @@ import (
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/pipeline/patches"
 	"github.com/80LK/godev/internal/utils"
+	"github.com/pmezard/go-difflib/difflib"
 )
 
 //go:embed templates/meta
@@ -25,7 +27,9 @@ var _FILES = []struct {
 	{File: "generated.go", Rewrite: true},
 }
 
-type GenerateMeta struct{}
+type GenerateMeta struct {
+	ContextKey string
+}
 
 func (g GenerateMeta) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	ptchs := []patches.Patch{}
@@ -45,19 +49,15 @@ func (g GenerateMeta) Plan(ctx *context.Context) ([]patches.Patch, error) {
 
 	for _, file := range _FILES {
 		target := filepath.Join(metaDir, file.File)
-
-		if !file.Rewrite {
-			ok, err := utils.ExsistFile(target)
-			if err != nil {
-				return nil, err
-			}
-
-			if ok {
-				continue
-			}
+		exsist, err := utils.ExsistFile(target)
+		if err != nil {
+			return nil, err
 		}
-		source := path.Join(_ROOT_PATH, file.File)
+		if !file.Rewrite && exsist {
+			continue
+		}
 
+		source := path.Join(_ROOT_PATH, file.File)
 		data, err := templateMetaSource.ReadFile(source)
 		if err != nil {
 			return nil, err
@@ -74,7 +74,23 @@ func (g GenerateMeta) Plan(ctx *context.Context) ([]patches.Patch, error) {
 		}
 		data = buf.Bytes()
 
-		ptchs = append(ptchs, patches.NewWriteFilePatch(target, nil, data, 0777))
+		oldData, err := os.ReadFile(target)
+		if err != nil {
+			return nil, err
+		}
+
+		aLines := difflib.SplitLines(string(oldData))
+		bLines := difflib.SplitLines(string(data))
+
+		m := difflib.NewMatcher(aLines, bLines)
+
+		if g.ContextKey != "" {
+			context.Set(ctx, g.ContextKey, m.Ratio() != 1)
+		}
+
+		if m.Ratio() != 1 {
+			ptchs = append(ptchs, patches.NewWriteFilePatch(target, oldData, data, 0777))
+		}
 	}
 
 	return ptchs, nil
