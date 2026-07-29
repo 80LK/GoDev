@@ -9,7 +9,7 @@ project (
 meta true
 
 build main (
-	input "./cmd/{{ .Project.Name }}/{{ .Project.Name }}.go"
+	input "./cmd/{{ .Project.Name }}"
 	output "./dist/{{ .Project.Name }}"
 	trimpath true
 )

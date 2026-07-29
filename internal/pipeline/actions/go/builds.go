@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/80LK/godev/internal/pipeline/actions"
+	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/pipeline/patches"
 	"github.com/80LK/godev/internal/project"
@@ -60,19 +62,18 @@ func (b Builds) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	}
 
 	if b.Target == "" {
-		ptchs := patches.ParallelPatch{
-			Items: make([]patches.Patch, len(ctx.GoProject.Builds)),
+		paralelPlan := actions.Parallel{
+			Items: make([]actions.Action, len(ctx.GoProject.Builds)),
 		}
 
 		i := 0
-		for _, build := range ctx.GoProject.Builds {
-			ptchs.Items[i] = buildShell(build, ctx.ProjectDir)
+		for name, _ := range ctx.GoProject.Builds {
+			paralelPlan.Items[i] = Builds{Target: name}
 			i++
 		}
 
-		return []patches.Patch{
-			ptchs,
-		}, nil
+		return paralelPlan.Plan(ctx)
+
 	}
 
 	build, ok := ctx.GoProject.Builds[b.Target]
@@ -80,7 +81,23 @@ func (b Builds) Plan(ctx *context.Context) ([]patches.Patch, error) {
 		return nil, fmt.Errorf("Target %s not found", b.Target)
 	}
 
-	return []patches.Patch{
-		buildShell(build, ctx.ProjectDir),
-	}, nil
+	pchs := make([]patches.Patch, 0)
+
+	if build.PreScript != "" {
+		script, err := projectAct.RunScript{Name: build.PreScript}.Plan(ctx)
+		if err != nil {
+			return nil, err
+		}
+		pchs = append(pchs, script...)
+	}
+	pchs = append(pchs, buildShell(build, ctx.ProjectDir))
+	if build.PostScript != "" {
+		script, err := projectAct.RunScript{Name: build.PostScript}.Plan(ctx)
+		if err != nil {
+			return nil, err
+		}
+		pchs = append(pchs, script...)
+	}
+
+	return pchs, nil
 }

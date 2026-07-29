@@ -57,7 +57,10 @@ func (p ShellPatch) Summary(ctx *context.Context) (string, error) {
 
 	var str strings.Builder
 
-	str.WriteString(ctx.GetPrefix() + ctx.GetCounter() + "shell " + p.Command)
+	str.WriteString(ctx.GetPrefix())
+	str.WriteString(ctx.GetCounter())
+	str.WriteString("shell ")
+	str.WriteString(p.Command)
 	for _, v := range p.Args {
 		str.WriteRune(' ')
 		str.WriteString(v)
@@ -65,7 +68,8 @@ func (p ShellPatch) Summary(ctx *context.Context) (string, error) {
 	str.WriteRune('\n')
 
 	if p.WorkDir != "" {
-		str.WriteString(ctx.GetPrefix() + "Workdir: ")
+		str.WriteString(ctx.GetPrefix())
+		str.WriteString("Workdir: ")
 		str.WriteString(p.WorkDir)
 		str.WriteRune('\n')
 	}

@@ -21,10 +21,11 @@ const _ROOT_PATH = "templates/meta"
 
 var _FILES = []struct {
 	File    string
+	Output  string
 	Rewrite bool
 }{
-	{File: "meta.go"},
-	{File: "generated.go", Rewrite: true},
+	{File: "meta.go.tpl", Output: "meta.go"},
+	{File: "generated.go.tpl", Output: "generated.go", Rewrite: true},
 }
 
 type GenerateMeta struct {
@@ -48,7 +49,7 @@ func (g GenerateMeta) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	}
 
 	for _, file := range _FILES {
-		target := filepath.Join(metaDir, file.File)
+		target := filepath.Join(metaDir, file.Output)
 		exsist, err := utils.ExsistFile(target)
 		if err != nil {
 			return nil, err

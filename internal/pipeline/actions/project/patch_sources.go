@@ -21,10 +21,6 @@ type PatchSources struct {
 }
 
 func (p PatchSources) Plan(ctx *context.Context) ([]patches.Patch, error) {
-	if ctx.GoProject.Project.Version.Major < 2 {
-		return nil, nil
-	}
-
 	oldVersion, ok := context.Get[*version.Version](ctx, p.OldVersionKey)
 	if !ok {
 		return nil, nil
@@ -52,7 +48,7 @@ func (p PatchSources) Plan(ctx *context.Context) ([]patches.Patch, error) {
 
 	// patch *.go
 	parallelPatch := &patches.ParallelPatch{
-		Items: make([]patches.Patch, 0, 10),
+		Items: make([][]patches.Patch, 0, 10),
 	}
 	patchs = append(patchs, parallelPatch)
 	err = filepath.WalkDir(ctx.ProjectDir, func(path string, d fs.DirEntry, err error) error {
@@ -94,12 +90,12 @@ func (p PatchSources) Plan(ctx *context.Context) ([]patches.Patch, error) {
 
 			newData := buf.Bytes()
 
-			parallelPatch.Items = append(parallelPatch.Items, patches.NewWriteFilePatch(
+			parallelPatch.Items = append(parallelPatch.Items, []patches.Patch{patches.NewWriteFilePatch(
 				path,
 				oldData,
 				newData,
 				0644,
-			))
+			)})
 		}
 
 		return nil
