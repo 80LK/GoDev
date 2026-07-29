@@ -75,16 +75,18 @@ func (g GenerateMeta) Plan(ctx *context.Context) ([]patches.Patch, error) {
 		}
 		data = buf.Bytes()
 
-		oldData, err := os.ReadFile(target)
-		if err != nil {
-			return nil, err
+		var oldData []byte
+		if exsist {
+			oldData, err = os.ReadFile(target)
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		aLines := difflib.SplitLines(string(oldData))
 		bLines := difflib.SplitLines(string(data))
 
 		m := difflib.NewMatcher(aLines, bLines)
-
 		if g.ContextKey != "" {
 			context.Set(ctx, g.ContextKey, m.Ratio() != 1)
 		}
