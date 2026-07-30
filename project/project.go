@@ -6,7 +6,7 @@ import (
 
 type GoProject struct {
 	Project *ProjectInfo           `modlike:"project"`
-	Meta    bool                   `modlike:"meta"`
+	Meta    bool                   `modlike:"meta,omitempty"`
 	Builds  map[string]*BuildInfo  `modlike:"build"`
 	Scripts map[string]*RootScript `modlike:"script"`
 }

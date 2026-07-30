@@ -21,7 +21,7 @@ func (r RootScript) AsScript() *Script {
 type Script struct {
 	Command string   `modlike:"command"`
 	Args    []string `modlike:"args"`
-	WorkDir string   `modlike:"workdir"`
+	WorkDir string   `modlike:"workdir,omitempty"`
 	Env     []string `modlike:"env"`
 }
 
