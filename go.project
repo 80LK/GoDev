@@ -11,12 +11,7 @@ meta true
 build main (
 	input "./cmd/god/god.go"
 	output "./dist/god.exe"
-	pre-script ""
-	post-script ""
-	os ""
-	arch ""
 	trimpath true
-	race false
 )
 
 script test (
@@ -26,5 +21,4 @@ script test (
 		echo
 		"Hello, World!"
 	)
-	workdir ""
 )
