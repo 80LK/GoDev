@@ -1,7 +1,7 @@
 
 project (
 	name godev
-	version 0.1.11
+	version 0.1.12
 	module github.com/80LK/godev
 	author 80LK
 )
