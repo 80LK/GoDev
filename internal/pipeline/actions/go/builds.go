@@ -2,6 +2,7 @@ package actions
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/80LK/godev/internal/pipeline/actions"
@@ -38,6 +39,7 @@ func buildShell(buildInfo *project.BuildInfo, wd string) patches.ShellPatch {
 		Args: []string{
 			"build",
 		},
+		Env: os.Environ(),
 	}
 
 	patch.Args = appendBoolFlag(patch.Args, buildInfo.Race, "-race")
@@ -46,6 +48,13 @@ func buildShell(buildInfo *project.BuildInfo, wd string) patches.ShellPatch {
 	patch.Args = appendListFlag(patch.Args, append(buildInfo.Tags, "god"), "-tags", ",")
 	patch.Args = appendListFlag(patch.Args, buildInfo.LdFlags, "-ldflags", " ")
 	patch.Args = appendListFlag(patch.Args, buildInfo.GcFlags, "-gcflags", " ")
+
+	if buildInfo.OS != "" {
+		patch.Env = append(patch.Env, "GOOS="+buildInfo.OS)
+	}
+	if buildInfo.Arch != "" {
+		patch.Env = append(patch.Env, "GOARCH="+buildInfo.Arch)
+	}
 
 	patch.Args = append(patch.Args,
 		"-o",
@@ -67,7 +76,7 @@ func (b Builds) Plan(ctx *context.Context) ([]patches.Patch, error) {
 		}
 
 		i := 0
-		for name, _ := range ctx.GoProject.Builds {
+		for name := range ctx.GoProject.Builds {
 			paralelPlan.Items[i] = Builds{Target: name}
 			i++
 		}
