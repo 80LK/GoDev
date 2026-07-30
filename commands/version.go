@@ -6,7 +6,7 @@ import (
 	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/internal/pipeline/actions"
 	"github.com/80LK/godev/internal/pipeline/context"
-	"github.com/80LK/godev/internal/project"
+	"github.com/80LK/godev/project"
 	"github.com/spf13/cobra"
 
 	fsAct "github.com/80LK/godev/internal/pipeline/actions/fs"

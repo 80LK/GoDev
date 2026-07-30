@@ -8,7 +8,7 @@ import (
 	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/pipeline/patches"
-	"github.com/80LK/godev/internal/project"
+	"github.com/80LK/godev/project"
 )
 
 type Builds struct {

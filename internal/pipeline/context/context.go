@@ -4,8 +4,8 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/80LK/godev/internal/project"
 	"github.com/80LK/godev/internal/version"
+	"github.com/80LK/godev/project"
 	"golang.org/x/mod/modfile"
 )
 
