@@ -29,13 +29,10 @@ func (a InitProjectContext) Plan(
 		if err != nil {
 			return nil, err
 		}
-		doc, err := modlike.Parse(data)
-		if err != nil {
-			return nil, err
-		}
 
 		ctx.GoProject = new(project.GoProject)
-		err = project.ParseIn(doc, ctx.GoProject)
+
+		err = modlike.Unmarshal(data, ctx.GoProject)
 		if err != nil {
 			return nil, err
 		}

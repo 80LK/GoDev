@@ -26,16 +26,7 @@ func (a EncodeGoProject) Plan(
 			)
 	}
 
-	doc := modlike.New()
-
-	err := doc.Encode(ctx.GoProject)
-	if err != nil {
-		return nil, err
-	}
-
-	data, err :=
-		modlike.Serialize(doc)
-
+	data, err := modlike.Marshal(ctx.GoProject)
 	if err != nil {
 		return nil, err
 	}

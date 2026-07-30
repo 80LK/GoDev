@@ -5,17 +5,8 @@ import (
 	"strings"
 
 	"github.com/80LK/godev/internal/version"
-	"github.com/80LK/modlike"
 	"golang.org/x/mod/modfile"
 )
-
-func ParseIn(doc modlike.Document, out *GoProject) error {
-	err := doc.Decode(out)
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
 func ParseFromGoModIn(file *modfile.File, out *GoProject) error {
 	return ParseFromGoModuleNameIn(file.Module.Mod.Path, out)
