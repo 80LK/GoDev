@@ -99,7 +99,7 @@ func (v *Version) EncodeFrom(raw string) error {
 	return nil
 }
 
-func (v *Version) DecodeModlike(val modlike.Value) error {
+func (v *Version) UnmarshalModlike(val modlike.Value) error {
 	kind := val.Kind()
 	if kind == modlike.K_MAP {
 		return fmt.Errorf("[Version:DecodeModlike]: invalid kind value %s. Available %s and %s", kind, modlike.K_LIST, modlike.K_STRING)
@@ -117,7 +117,7 @@ func (v *Version) DecodeModlike(val modlike.Value) error {
 	return v.EncodeFrom(raw)
 }
 
-func (v *Version) EncodeModlike(val modlike.Value) error {
+func (v *Version) MarshalModlike(val modlike.Value) error {
 	list, err := val.ToList()
 	if err != nil {
 		return err
