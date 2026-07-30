@@ -1,7 +1,7 @@
 
 project (
 	name godev
-	version 0.1.12
+	version 0.1.13
 	module github.com/80LK/godev
 	author 80LK
 )
@@ -13,6 +13,8 @@ build main (
 	output "./dist/god.exe"
 	pre-script ""
 	post-script ""
+	os ""
+	arch ""
 	trimpath true
 	race false
 )
