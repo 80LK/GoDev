@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/80LK/godev/internal/pipeline"
-	"github.com/80LK/godev/internal/pipeline/actions"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/project"
 	"github.com/spf13/cobra"
@@ -61,12 +60,7 @@ Args:
 		pl.Add(
 			projectAct.EncodeGoProject{},
 			projectAct.PatchSources{OldVersionKey: "old_version"},
-			actions.ConditionAction{
-				Condition: func(ctx *context.Context) bool {
-					return ctx.GoProject.Meta
-				},
-				Action: projectAct.GenerateMeta{},
-			},
+			projectAct.GenerateMeta{},
 		)
 
 		if !noCommit {
@@ -109,12 +103,7 @@ Args:
 			projectAct.InitProjectContext{},
 			projectAct.VersionSetPre{OldVersionKey: "old_version", NewVersionKey: "new_version", Value: args[0]},
 			projectAct.EncodeGoProject{},
-			actions.ConditionAction{
-				Condition: func(ctx *context.Context) bool {
-					return ctx.GoProject.Meta
-				},
-				Action: projectAct.GenerateMeta{},
-			},
+			projectAct.GenerateMeta{},
 		)
 		if !noCommit {
 			pl.Add(gitAct.GitCommit{InputKey: "new_version"})
@@ -154,12 +143,7 @@ Args:
 			projectAct.VersionSet{OldVersionKey: "old_version", NewVersionKey: "new_version", Value: args[0]},
 			projectAct.EncodeGoProject{},
 			projectAct.PatchSources{OldVersionKey: "old_version"},
-			actions.ConditionAction{
-				Condition: func(ctx *context.Context) bool {
-					return ctx.GoProject.Meta
-				},
-				Action: projectAct.GenerateMeta{},
-			},
+			projectAct.GenerateMeta{},
 		)
 
 		if !noCommit {

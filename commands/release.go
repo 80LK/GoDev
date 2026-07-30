@@ -23,23 +23,18 @@ var ReleaseCmd = &cobra.Command{
 			gitAct.CheckClearGit{},
 			projectAct.InitProjectContext{},
 			projectAct.RunScript{IgnoreNotFound: true, Name: project.LifecycleName(project.PhaseBefore, "release")},
-			actions.ConditionAction{
-				Condition: func(ctx *context.Context) bool {
-					return ctx.GoProject.Meta
+			pipeline.New().Add(
+				projectAct.GenerateMeta{
+					ContextKey: "generated",
 				},
-				Action: pipeline.New().Add(
-					projectAct.GenerateMeta{
-						ContextKey: "generated",
+				actions.ConditionAction{
+					Condition: func(ctx *context.Context) bool {
+						res, _ := context.Get[bool](ctx, "generated")
+						return res
 					},
-					actions.ConditionAction{
-						Condition: func(ctx *context.Context) bool {
-							res, _ := context.Get[bool](ctx, "generated")
-							return res
-						},
-						Action: gitAct.GitCommit{Value: "generate meta info"},
-					},
-				),
-			},
+					Action: gitAct.GitCommit{Value: "generate meta info"},
+				},
+			),
 			gitAct.GitTagVersion{},
 			projectAct.RunScript{IgnoreNotFound: true, Name: project.LifecycleName(project.PhaseBefore, "release")},
 		).Execute(ctx)

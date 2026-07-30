@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 
 	"github.com/80LK/godev/internal/pipeline"
-	"github.com/80LK/godev/internal/pipeline/actions"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/project"
 
@@ -85,12 +84,7 @@ Args:
 				Template: template,
 			},
 
-			actions.ConditionAction{
-				Condition: func(ctx *context.Context) bool {
-					return ctx.GoProject.Meta
-				},
-				Action: projectAct.GenerateMeta{},
-			},
+			projectAct.GenerateMeta{},
 			gitAct.GitInit{},
 			goAct.Tidy{},
 			gitAct.GitCommit{Value: "init commit"},

@@ -34,6 +34,9 @@ type GenerateMeta struct {
 
 func (g GenerateMeta) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	ptchs := []patches.Patch{}
+	if !ctx.GoProject.Meta {
+		return ptchs, nil
+	}
 
 	metaDir := filepath.Join(ctx.ProjectDir, "internal/meta")
 	ok, err := utils.ExsistDir(metaDir)
