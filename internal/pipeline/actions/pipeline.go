@@ -31,7 +31,7 @@ func (p Pipeline) Plan(
 	return patches, nil
 }
 
-func (p *Pipeline) Add(actions ...Action) *Pipeline {
+func (p *Pipeline) Add(actions ...Action) Executor {
 	p.Actions = append(p.Actions, actions...)
 	return p
 }

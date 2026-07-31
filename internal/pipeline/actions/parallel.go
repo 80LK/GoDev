@@ -7,14 +7,14 @@ import (
 )
 
 type Parallel struct {
-	Items []Action
+	Actions []Action
 }
 
 func (a Parallel) Plan(
 	ctx *context.Context,
 ) ([]patches.Patch, error) {
 
-	items, err := utils.Map(a.Items, func(item Action, _ int, _ []Action) ([]patches.Patch, error) {
+	items, err := utils.Map(a.Actions, func(item Action, _ int, _ []Action) ([]patches.Patch, error) {
 		return item.Plan(ctx)
 	})
 	if err != nil {
@@ -26,4 +26,8 @@ func (a Parallel) Plan(
 			Items: items,
 		},
 	}, nil
+}
+func (p *Parallel) Add(actions ...Action) Executor {
+	p.Actions = append(p.Actions, actions...)
+	return p
 }

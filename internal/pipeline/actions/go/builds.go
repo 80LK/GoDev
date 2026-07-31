@@ -13,7 +13,8 @@ import (
 )
 
 type Builds struct {
-	Target string
+	Target   string
+	Parallel bool
 }
 
 func appendBoolFlag(args []string, enabled bool, flag string) []string {
@@ -71,17 +72,14 @@ func (b Builds) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	}
 
 	if b.Target == "" {
-		paralelPlan := actions.Parallel{
-			Items: make([]actions.Action, len(ctx.GoProject.Builds)),
-		}
+		var plan actions.Executor
 
-		i := 0
-		for name := range ctx.GoProject.Builds {
-			paralelPlan.Items[i] = Builds{Target: name}
-			i++
+		if b.Parallel {
+			plan = &actions.Parallel{}
+		} else {
+			plan = &actions.Pipeline{}
 		}
-
-		return paralelPlan.Plan(ctx)
+		return plan.Plan(ctx)
 
 	}
 

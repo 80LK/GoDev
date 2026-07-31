@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"fmt"
+
 	"github.com/80LK/godev/internal/pipeline"
 	goAct "github.com/80LK/godev/internal/pipeline/actions/go"
 	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
@@ -8,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var parallel bool
 var BuildCmd = &cobra.Command{
 	Use:   "build <target>",
 	Short: "build target",
@@ -15,18 +18,26 @@ var BuildCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.New(dryRun)
 		target := ""
-
-		if len(args) == 1 {
+		l := len(args)
+		switch l {
+		case 0:
+		case 1:
 			target = args[0]
+		default:
+			return fmt.Errorf("More args")
 		}
 
 		return pipeline.New().Add(
 			projectAct.InitProjectContext{},
-			goAct.Builds{Target: target},
+			goAct.Builds{
+				Target:   target,
+				Parallel: parallel,
+			},
 		).Execute(ctx)
 	},
 }
 
 func init() {
+	BuildCmd.Flags().BoolVarP(&parallel, "parallel", "p", false, "paralleling builds")
 	Root.AddCommand(BuildCmd)
 }

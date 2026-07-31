@@ -8,3 +8,8 @@ import (
 type Action interface {
 	Plan(*context.Context) ([]patches.Patch, error)
 }
+
+type Executor interface {
+	Action
+	Add(...Action) Executor
+}
