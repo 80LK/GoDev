@@ -4,6 +4,7 @@ import (
 	"github.com/80LK/godev/internal/pipeline"
 	"github.com/80LK/godev/project"
 
+	"github.com/80LK/godev/internal/pipeline/actions"
 	fsAct "github.com/80LK/godev/internal/pipeline/actions/fs"
 	gitAct "github.com/80LK/godev/internal/pipeline/actions/git"
 	goAct "github.com/80LK/godev/internal/pipeline/actions/go"
@@ -22,7 +23,12 @@ func Integrate(opts IntegrateOptions) error {
 	ctx := context.New(opts.DryRun)
 
 	pl := pipeline.New().Add(
-		fsAct.CheckNotExists{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+		actions.OR{
+			Actions: []actions.Action{
+				fsAct.CheckExistsFile{Path: project.GetJSONProjectFile(ctx.ProjectDir)},
+				fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+			},
+		},
 		fsAct.CheckExistsFile{Path: project.GetGoModFile(ctx.ProjectDir)},
 		gitAct.CheckClearGit{},
 

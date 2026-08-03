@@ -15,6 +15,9 @@ func ParseFromGoModIn(file *modfile.File, out *GoProject) error {
 func GetGoProjectFile(dir string) string {
 	return path.Join(dir, "go.project")
 }
+func GetJSONProjectFile(dir string) string {
+	return path.Join(dir, "project.json")
+}
 
 func GetGoModFile(dir string) string {
 	return path.Join(dir, "go.mod")

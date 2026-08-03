@@ -2,6 +2,7 @@ package cli
 
 import (
 	"github.com/80LK/godev/internal/pipeline"
+	"github.com/80LK/godev/internal/pipeline/actions"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/project"
 
@@ -38,7 +39,12 @@ type VersionSetOptions struct {
 func VersionBump(opts VersionBumpOptions) error {
 	ctx := context.New(opts.DryRun)
 	pl := pipeline.New().Add(
-		fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+		actions.OR{
+			Actions: []actions.Action{
+				fsAct.CheckExistsFile{Path: project.GetJSONProjectFile(ctx.ProjectDir)},
+				fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+			},
+		},
 	)
 	if !opts.NoCommit {
 		pl.Add(gitAct.CheckClearGit{})
@@ -73,7 +79,12 @@ func VersionPreRelease(opts VersionPreReleaseOptions) error {
 	ctx := context.New(opts.DryRun)
 
 	pl := pipeline.New().Add(
-		fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+		actions.OR{
+			Actions: []actions.Action{
+				fsAct.CheckExistsFile{Path: project.GetJSONProjectFile(ctx.ProjectDir)},
+				fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+			},
+		},
 	)
 
 	if !opts.NoCommit {
@@ -100,7 +111,12 @@ func VersionSet(opts VersionSetOptions) error {
 	ctx := context.New(opts.DryRun)
 
 	pl := pipeline.New().Add(
-		fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+		actions.OR{
+			Actions: []actions.Action{
+				fsAct.CheckExistsFile{Path: project.GetJSONProjectFile(ctx.ProjectDir)},
+				fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+			},
+		},
 	)
 
 	if !opts.NoCommit {

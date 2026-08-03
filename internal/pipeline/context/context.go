@@ -13,8 +13,9 @@ type Context struct {
 	DryRun     bool
 	ProjectDir string
 
-	GoProject *project.GoProject
-	Mod       *modfile.File
+	GoProject        *project.GoProject
+	DeprecetedConfig bool
+	Mod              *modfile.File
 
 	GoVer *version.Version
 

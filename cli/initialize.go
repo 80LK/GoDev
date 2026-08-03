@@ -40,6 +40,7 @@ func Initialize(opts InitializeOptions) error {
 		pl.Add(
 			fsAct.EnsureEmptyDir{Path: ctx.ProjectDir, Perm: 0777},
 			fsAct.CheckNotExists{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+			fsAct.CheckNotExists{Path: project.GetJSONProjectFile(ctx.ProjectDir)},
 			fsAct.CheckNotExists{Path: project.GetGoModFile(ctx.ProjectDir)},
 		)
 	}

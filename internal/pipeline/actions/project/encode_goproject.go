@@ -1,15 +1,15 @@
 package actions
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
 	"github.com/80LK/godev/internal/pipeline/context"
+	"github.com/80LK/modlike"
 
 	"github.com/80LK/godev/internal/pipeline/patches"
 	"github.com/80LK/godev/project"
-
-	"github.com/80LK/modlike"
 )
 
 type EncodeGoProject struct {
@@ -26,12 +26,25 @@ func (a EncodeGoProject) Plan(
 			)
 	}
 
-	data, err := modlike.Marshal(ctx.GoProject)
-	if err != nil {
-		return nil, err
+	var (
+		data []byte
+		err  error
+		path string
+	)
+	if ctx.DeprecetedConfig {
+		data, err = modlike.Marshal(ctx.GoProject)
+		if err != nil {
+			return nil, err
+		}
+		path = project.GetGoProjectFile(ctx.ProjectDir)
+	} else {
+		data, err = json.Marshal(ctx.GoProject)
+		if err != nil {
+			return nil, err
+		}
+		path = project.GetJSONProjectFile(ctx.ProjectDir)
 	}
 
-	path := project.GetGoProjectFile(ctx.ProjectDir)
 	oldData, _ := os.ReadFile(path)
 
 	return []patches.Patch{

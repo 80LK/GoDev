@@ -15,7 +15,12 @@ func Release(opts DryRunOptions) error {
 	ctx := context.New(opts.DryRun)
 
 	return pipeline.New().Add(
-		fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+		actions.OR{
+			Actions: []actions.Action{
+				fsAct.CheckExistsFile{Path: project.GetJSONProjectFile(ctx.ProjectDir)},
+				fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
+			},
+		},
 		gitAct.CheckClearGit{},
 		projectAct.InitProjectContext{},
 		projectAct.RunScript{IgnoreNotFound: true, Name: project.LifecycleName(project.PhaseBefore, "release")},

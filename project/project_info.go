@@ -7,10 +7,10 @@ import (
 )
 
 type ProjectInfo struct {
-	Name    string           `modlike:"name"`
-	Version *version.Version `modlike:"version"`
-	Module  string           `modlike:"module"`
-	Author  string           `modlike:"author"`
+	Name    string           `modlike:"name" json:"name"`
+	Version *version.Version `modlike:"version" json:"version"`
+	Module  string           `modlike:"module" json:"module"`
+	Author  string           `modlike:"author" json:"author,omitempty"`
 }
 
 func (p *ProjectInfo) GetGoModStmt() string {
