@@ -38,7 +38,7 @@ func (a EncodeGoProject) Plan(
 		}
 		path = project.GetGoProjectFile(ctx.ProjectDir)
 	} else {
-		data, err = json.Marshal(ctx.GoProject)
+		data, err = json.MarshalIndent(ctx.GoProject, "", "\t")
 		if err != nil {
 			return nil, err
 		}
