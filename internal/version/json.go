@@ -11,5 +11,5 @@ func (v *Version) UnmarshalJSON(data []byte) error {
 }
 
 func (v *Version) MarshalJSON() ([]byte, error) {
-	return []byte(v.StringWithoutSuffix()), nil
+	return json.Marshal(v.StringWithoutSuffix())
 }
