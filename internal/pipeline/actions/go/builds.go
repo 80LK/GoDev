@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"maps"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 
@@ -11,6 +12,7 @@ import (
 	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/pipeline/patches"
+	"github.com/80LK/godev/internal/utils"
 	"github.com/80LK/godev/project"
 )
 
@@ -35,7 +37,7 @@ func appendListFlag(args []string, list []string, flag string, join string) []st
 	return args
 }
 
-func buildShell(buildInfo *project.BuildInfo, wd string) patches.ShellPatch {
+func buildShell(buildInfo *project.BuildInfo, wd string) []patches.Patch {
 	patch := patches.ShellPatch{
 		WorkDir: wd,
 		Command: "go",
@@ -59,13 +61,20 @@ func buildShell(buildInfo *project.BuildInfo, wd string) patches.ShellPatch {
 		patch.Env = append(patch.Env, "GOARCH="+buildInfo.Arch)
 	}
 
+	tempOut := utils.GetTempFile(filepath.Base(buildInfo.Input))
 	patch.Args = append(patch.Args,
 		"-o",
-		buildInfo.Output,
+		tempOut,
 		buildInfo.Input,
 	)
 
-	return patch
+	return []patches.Patch{
+		patch,
+		patches.MovePatch{
+			Input:  tempOut,
+			Output: buildInfo.Output,
+		},
+	}
 }
 
 func (b Builds) Plan(ctx *context.Context) ([]patches.Patch, error) {
@@ -100,7 +109,7 @@ func (b Builds) Plan(ctx *context.Context) ([]patches.Patch, error) {
 			}
 			pchs = append(pchs, script...)
 		}
-		pchs = append(pchs, buildShell(build, ctx.ProjectDir))
+		pchs = append(pchs, buildShell(build, ctx.ProjectDir)...)
 		if build.PostScript != "" {
 			script, err := projectAct.RunScript{Name: build.PostScript}.Plan(ctx)
 			if err != nil {
