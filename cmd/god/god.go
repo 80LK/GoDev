@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/80LK/godev/commands"
+	"github.com/80LK/godev/internal/commands"
 )
 
 func main() {
