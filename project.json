@@ -1,7 +1,7 @@
 {
 	"project": {
 		"name": "godev",
-		"version": "0.1.19",
+		"version": "0.1.20",
 		"module": "github.com/80LK/godev",
 		"author": "80LK"
 	},
