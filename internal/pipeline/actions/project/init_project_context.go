@@ -47,7 +47,7 @@ func (a InitProjectContext) Plan(
 		}
 	} else {
 		jsonProjectFile := project.GetJSONProjectFile(ctx.ProjectDir)
-		exsist, err = utils.ExsistFile(goProjectFile)
+		exsist, err = utils.ExsistFile(jsonProjectFile)
 		if err != nil {
 			return nil, err
 		}
@@ -59,7 +59,6 @@ func (a InitProjectContext) Plan(
 			}
 
 			ctx.GoProject = project.New()
-
 			err = json.Unmarshal(data, ctx.GoProject)
 			if err != nil {
 				return nil, err
