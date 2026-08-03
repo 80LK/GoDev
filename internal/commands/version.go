@@ -3,13 +3,9 @@ package commands
 import (
 	"errors"
 
-	"github.com/80LK/godev/internal/pipeline"
-	"github.com/80LK/godev/internal/pipeline/context"
-	"github.com/80LK/godev/project"
+	"github.com/80LK/godev/cli"
 	"github.com/spf13/cobra"
 
-	fsAct "github.com/80LK/godev/internal/pipeline/actions/fs"
-	gitAct "github.com/80LK/godev/internal/pipeline/actions/git"
 	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
 )
 
@@ -27,52 +23,27 @@ Args:
   <patch|minor|major> 	Bump patch, minor or major version
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		err := projectAct.ErrBump
 		if len(args) != 1 {
-			return projectAct.ErrBump
+			return err
 		}
 
-		bump, err := projectAct.ToBump(args[0])
+		opts := cli.VersionBumpOptions{}
+		opts.Release = release
+		opts.NoCommit = noCommit
+		opts.DryRun = dryRun
+
+		opts.Bump, err = projectAct.ToBump(args[0])
 		if err != nil {
 			return err
 		}
 
-		pre, err := cmd.Flags().GetString("pre")
+		opts.Pre, err = cmd.Flags().GetString("pre")
 		if err != nil {
 			return err
 		}
 
-		ctx := context.New(dryRun)
-		pl := pipeline.New().Add(
-			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
-		)
-		if !noCommit {
-			pl.Add(gitAct.CheckClearGit{})
-		}
-		pl.Add(
-			projectAct.InitProjectContext{},
-			projectAct.RunScript{IgnoreNotFound: true, Name: project.LifecycleName(project.PhaseBefore, "version")},
-			projectAct.VersionBump{OldVersionKey: "old_version", NewVersionKey: "new_version", Value: bump},
-		)
-		if pre != "" {
-			pl.Add(projectAct.VersionSetPre{NewVersionKey: "new_version", Value: pre})
-		}
-
-		pl.Add(
-			projectAct.EncodeGoProject{},
-			projectAct.PatchSources{OldVersionKey: "old_version"},
-			projectAct.GenerateMeta{},
-		)
-
-		if !noCommit {
-			pl.Add(gitAct.GitCommit{InputKey: "new_version"})
-		}
-
-		if !noCommit && release {
-			pl.Add(gitAct.GitTagVersion{})
-		}
-		pl.Add(projectAct.RunScript{IgnoreNotFound: true, Name: project.LifecycleName(project.PhaseAfter, "version")})
-
-		return pl.Execute(ctx)
+		return cli.VersionBump(opts)
 	},
 }
 
@@ -85,35 +56,18 @@ Args:
   <pre-release-tag> 	Setted pre-release tag in go.project
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		err := errors.New("Expose pre-release tag")
 		if len(args) != 1 {
-			return errors.New("Expose pre-release tag")
+			return err
 		}
 
-		ctx := context.New(dryRun)
+		opts := cli.VersionPreReleaseOptions{}
+		opts.DryRun = dryRun
+		opts.NoCommit = noCommit
+		opts.Release = release
+		opts.Pre = args[0]
 
-		pl := pipeline.New().Add(
-			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
-		)
-
-		if !noCommit {
-			pl.Add(gitAct.CheckClearGit{})
-		}
-
-		pl.Add(
-			projectAct.InitProjectContext{},
-			projectAct.VersionSetPre{OldVersionKey: "old_version", NewVersionKey: "new_version", Value: args[0]},
-			projectAct.EncodeGoProject{},
-			projectAct.GenerateMeta{},
-		)
-		if !noCommit {
-			pl.Add(gitAct.GitCommit{InputKey: "new_version"})
-		}
-
-		if !noCommit && release {
-			pl.Add(gitAct.GitTagVersion{})
-		}
-
-		return pl.Execute(ctx)
+		return cli.VersionPreRelease(opts)
 	},
 }
 
@@ -130,30 +84,13 @@ Args:
 			return errors.New("Expose version")
 		}
 
-		ctx := context.New(dryRun)
+		opts := cli.VersionSetOptions{}
+		opts.DryRun = dryRun
+		opts.NoCommit = noCommit
+		opts.Release = release
+		opts.Version = args[0]
 
-		pl := pipeline.New().Add(
-			fsAct.CheckExistsFile{Path: project.GetGoProjectFile(ctx.ProjectDir)},
-		)
-		if !noCommit {
-			pl.Add(gitAct.CheckClearGit{})
-		}
-		pl.Add(
-			projectAct.InitProjectContext{},
-			projectAct.VersionSet{OldVersionKey: "old_version", NewVersionKey: "new_version", Value: args[0]},
-			projectAct.EncodeGoProject{},
-			projectAct.PatchSources{OldVersionKey: "old_version"},
-			projectAct.GenerateMeta{},
-		)
-
-		if !noCommit {
-			pl.Add(gitAct.GitCommit{InputKey: "new_version"})
-		}
-
-		if !noCommit && release {
-			pl.Add(gitAct.GitTagVersion{})
-		}
-		return pl.Execute(ctx)
+		return cli.VersionSet(opts)
 	},
 }
 
