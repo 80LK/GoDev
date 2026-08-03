@@ -2,7 +2,9 @@ package actions
 
 import (
 	"fmt"
+	"maps"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/80LK/godev/internal/pipeline/actions"
@@ -13,7 +15,7 @@ import (
 )
 
 type Builds struct {
-	Target   string
+	Targets  []string
 	Parallel bool
 }
 
@@ -71,40 +73,43 @@ func (b Builds) Plan(ctx *context.Context) ([]patches.Patch, error) {
 		return nil, nil
 	}
 
-	if b.Target == "" {
-		var plan actions.Executor
+	var plan actions.Executor
 
-		if b.Parallel {
-			plan = &actions.Parallel{}
-		} else {
-			plan = &actions.Pipeline{}
+	if b.Parallel {
+		plan = &actions.Parallel{}
+	} else {
+		plan = &actions.Pipeline{}
+	}
+
+	if b.Targets == nil {
+		b.Targets = slices.Collect(maps.Keys(ctx.GoProject.Builds))
+	}
+
+	for _, buildName := range b.Targets {
+		build, ok := ctx.GoProject.Builds[buildName]
+		if !ok {
+			fmt.Printf("Target %s not found. skiped\n", b.Targets)
+			continue
 		}
-		return plan.Plan(ctx)
+		pchs := make([]patches.Patch, 0)
 
-	}
-
-	build, ok := ctx.GoProject.Builds[b.Target]
-	if !ok {
-		return nil, fmt.Errorf("Target %s not found", b.Target)
-	}
-
-	pchs := make([]patches.Patch, 0)
-
-	if build.PreScript != "" {
-		script, err := projectAct.RunScript{Name: build.PreScript}.Plan(ctx)
-		if err != nil {
-			return nil, err
+		if build.PreScript != "" {
+			script, err := projectAct.RunScript{Name: build.PreScript}.Plan(ctx)
+			if err != nil {
+				return nil, err
+			}
+			pchs = append(pchs, script...)
 		}
-		pchs = append(pchs, script...)
-	}
-	pchs = append(pchs, buildShell(build, ctx.ProjectDir))
-	if build.PostScript != "" {
-		script, err := projectAct.RunScript{Name: build.PostScript}.Plan(ctx)
-		if err != nil {
-			return nil, err
+		pchs = append(pchs, buildShell(build, ctx.ProjectDir))
+		if build.PostScript != "" {
+			script, err := projectAct.RunScript{Name: build.PostScript}.Plan(ctx)
+			if err != nil {
+				return nil, err
+			}
+			pchs = append(pchs, script...)
 		}
-		pchs = append(pchs, script...)
+
 	}
 
-	return pchs, nil
+	return plan.Plan(ctx)
 }

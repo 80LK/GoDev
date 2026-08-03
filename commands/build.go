@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"fmt"
-
 	"github.com/80LK/godev/internal/pipeline"
 	goAct "github.com/80LK/godev/internal/pipeline/actions/go"
 	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
@@ -12,25 +10,16 @@ import (
 
 var parallel bool
 var BuildCmd = &cobra.Command{
-	Use:   "build <target>",
+	Use:   "build <...target>",
 	Short: "build target",
 	Long:  `Build target sources. If target not set, build all`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(cmd *cobra.Command, targets []string) error {
 		ctx := context.New(dryRun)
-		target := ""
-		l := len(args)
-		switch l {
-		case 0:
-		case 1:
-			target = args[0]
-		default:
-			return fmt.Errorf("More args")
-		}
 
 		return pipeline.New().Add(
 			projectAct.InitProjectContext{},
 			goAct.Builds{
-				Target:   target,
+				Targets:  targets,
 				Parallel: parallel,
 			},
 		).Execute(ctx)
