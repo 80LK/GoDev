@@ -47,5 +47,12 @@ Args:
 }
 
 func init() {
+	flags := InitCmd.Flags()
+
+	flags.StringP(_TEMPLATE_FLAG, "t", "app", "usage template. Default: app. Available: app; module.")
+	flags.BoolP(_FORCE_FLAG, "f", false, "force initialize project in non-empty directory")
+	flags.StringP(_AUTHOR_FLAG, _AUTHOR_FLAG_P, "", _AUTHOR_FLAG_U)
+	flags.StringP(_VERSION_FLAG, _VERSION_FLAG_P, "", _VERSION_FLAG_U)
+
 	Root.AddCommand(InitCmd)
 }
