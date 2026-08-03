@@ -3,7 +3,7 @@ package project
 type RootScript struct {
 	Script
 
-	Commands []*Script `modlike:"commands"`
+	Commands []*Script `modlike:"commands" json:"commands,omitempty"`
 }
 
 func (r RootScript) AsScript() *Script {
