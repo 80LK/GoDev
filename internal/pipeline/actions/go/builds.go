@@ -1,80 +1,17 @@
 package actions
 
 import (
-	"fmt"
 	"maps"
-	"os"
-	"path/filepath"
 	"slices"
-	"strings"
 
 	"github.com/80LK/godev/internal/pipeline/actions"
-	projectAct "github.com/80LK/godev/internal/pipeline/actions/project"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/pipeline/patches"
-	"github.com/80LK/godev/internal/utils"
-	"github.com/80LK/godev/project"
 )
 
 type Builds struct {
 	Targets  []string
 	Parallel bool
-}
-
-func appendBoolFlag(args []string, enabled bool, flag string) []string {
-	if enabled {
-		return append(args, flag)
-	}
-
-	return args
-}
-
-func appendListFlag(args []string, list []string, flag string, join string) []string {
-	if len(list) > 0 {
-		return append(args, flag+"="+strings.Join(list, join))
-	}
-
-	return args
-}
-
-func buildShell(buildInfo *project.BuildInfo, wd string) []patches.Patch {
-	patch := patches.ShellPatch{
-		WorkDir: wd,
-		Command: "go",
-		Args: []string{
-			"build",
-		},
-		Env: os.Environ(),
-	}
-
-	patch.Args = appendBoolFlag(patch.Args, buildInfo.Race, "-race")
-	patch.Args = appendBoolFlag(patch.Args, buildInfo.Trimpath, "-trimpath")
-
-	patch.Args = appendListFlag(patch.Args, append(buildInfo.Tags, "god"), "-tags", ",")
-	patch.Args = appendListFlag(patch.Args, buildInfo.LdFlags, "-ldflags", " ")
-	patch.Args = appendListFlag(patch.Args, buildInfo.GcFlags, "-gcflags", " ")
-
-	if buildInfo.OS != "" {
-		patch.Env = append(patch.Env, "GOOS="+buildInfo.OS)
-	}
-	if buildInfo.Arch != "" {
-		patch.Env = append(patch.Env, "GOARCH="+buildInfo.Arch)
-	}
-
-	tempOut := utils.GetTempFile(filepath.Base(buildInfo.Input))
-	patch.Args = append(patch.Args,
-		"-o",
-		tempOut,
-		buildInfo.Input,
-	)
-
-	return []patches.Patch{
-		patch,
-		patches.MovePatch{
-			Input:  tempOut,
-			Output: buildInfo.Output,
-		},
-	}
 }
 
 func (b Builds) Plan(ctx *context.Context) ([]patches.Patch, error) {
@@ -95,29 +32,7 @@ func (b Builds) Plan(ctx *context.Context) ([]patches.Patch, error) {
 	}
 
 	for _, buildName := range b.Targets {
-		build, ok := ctx.GoProject.Builds[buildName]
-		if !ok {
-			fmt.Printf("Target %s not found. skiped\n", b.Targets)
-			continue
-		}
-		pchs := make([]patches.Patch, 0)
-
-		if build.PreScript != "" {
-			script, err := projectAct.RunScript{Name: build.PreScript}.Plan(ctx)
-			if err != nil {
-				return nil, err
-			}
-			pchs = append(pchs, script...)
-		}
-		pchs = append(pchs, buildShell(build, ctx.ProjectDir)...)
-		if build.PostScript != "" {
-			script, err := projectAct.RunScript{Name: build.PostScript}.Plan(ctx)
-			if err != nil {
-				return nil, err
-			}
-			pchs = append(pchs, script...)
-		}
-
+		plan.Add(Build{Target: buildName})
 	}
 
 	return plan.Plan(ctx)
