@@ -17,5 +17,7 @@ func New() *GoProject {
 		Project: &ProjectInfo{
 			Version: &version.Version{},
 		},
+		Builds:  map[string]*BuildInfo{},
+		Scripts: map[string]*RootScript{},
 	}
 }

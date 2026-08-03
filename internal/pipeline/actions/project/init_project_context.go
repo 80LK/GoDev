@@ -39,7 +39,7 @@ func (a InitProjectContext) Plan(
 			return nil, err
 		}
 
-		ctx.GoProject = new(project.GoProject)
+		ctx.GoProject = project.New()
 
 		err = modlike.Unmarshal(data, ctx.GoProject)
 		if err != nil {
@@ -58,7 +58,7 @@ func (a InitProjectContext) Plan(
 				return nil, err
 			}
 
-			ctx.GoProject = new(project.GoProject)
+			ctx.GoProject = project.New()
 
 			err = json.Unmarshal(data, ctx.GoProject)
 			if err != nil {
