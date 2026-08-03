@@ -45,3 +45,7 @@ Args:
 		return cli.Initialize(opts)
 	},
 }
+
+func init() {
+	Root.AddCommand(InitCmd)
+}
