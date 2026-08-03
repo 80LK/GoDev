@@ -22,6 +22,7 @@ var MigrateCmd = &cobra.Command{
 			gitAct.CheckClearGit{},
 			projectAct.InitProjectContext{DisabelDeprecetedMessage: true},
 			projectAct.Migrate{},
+			gitAct.GitCommit{Value: "migrate project structure"},
 		).Execute(ctx)
 	},
 }
