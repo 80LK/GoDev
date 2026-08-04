@@ -3,6 +3,7 @@ package patches
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/80LK/godev/internal/pipeline/patches/context"
 )
@@ -13,7 +14,7 @@ type MovePatch struct {
 }
 
 func (m MovePatch) Apply() error {
-	if err := os.MkdirAll(m.Output, 0777); err != nil && !os.IsExist(err) {
+	if err := os.MkdirAll(filepath.Dir(m.Output), 0777); err != nil && !os.IsExist(err) {
 		return err
 	}
 	return os.Rename(m.Input, m.Output)
