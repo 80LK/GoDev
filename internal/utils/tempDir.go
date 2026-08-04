@@ -15,9 +15,6 @@ func GetTempDir() string {
 		panic(err)
 	}
 
-	if err := os.Mkdir(dir, 0766); err != nil && !os.IsExist(err) {
-		panic(err)
-	}
 	return dir
 }
 
