@@ -25,7 +25,7 @@ func (l Logger) log(level level, raw string, values ...any) {
 		return
 	}
 
-	fmt.Fprintf(l.writer, "[%s][%s][%s]", time.Now().Format(time.DateTime), level, l.prefix)
+	fmt.Fprintf(l.writer, "[%s][%s][%s] ", time.Now().Format(time.DateTime), level, l.prefix)
 	fmt.Fprintf(l.writer, raw, values...)
 	var buf [4]byte
 	n := utf8.EncodeRune(buf[:], '\n')
