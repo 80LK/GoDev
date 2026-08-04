@@ -4,7 +4,7 @@ package meta
 
 var meta = Meta{
 	Name:    "godev",
-	Version: "v0.1.25",
+	Version: "v0.1.26",
 	Author:  "80LK",
 	Module:  "github.com/80LK/godev",
 }
