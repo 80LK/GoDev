@@ -13,6 +13,9 @@ type MovePatch struct {
 }
 
 func (m MovePatch) Apply() error {
+	if err := os.MkdirAll(m.Output, 0777); err != nil && !os.IsExist(err) {
+		return err
+	}
 	return os.Rename(m.Input, m.Output)
 }
 

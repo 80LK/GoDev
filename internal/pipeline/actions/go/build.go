@@ -10,6 +10,7 @@ import (
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/pipeline/patches"
 	"github.com/80LK/godev/internal/utils"
+	"github.com/80LK/godev/internal/utils/logger"
 	"github.com/80LK/godev/project"
 )
 
@@ -18,17 +19,20 @@ type Build struct {
 }
 
 func (b Build) Plan(ctx *context.Context) ([]patches.Patch, error) {
+	logger := logger.Get("BUILD")
 	if ctx.GoProject.Builds == nil {
 		return nil, nil
 	}
 
 	build, ok := ctx.GoProject.Builds[b.Target]
+	logger.Log("Build %q exist: %t", b.Target, ok)
 	if !ok {
 		fmt.Printf("Target %s not found. skiped\n", b.Target)
 		return nil, nil
 	}
 	pchs := make([]patches.Patch, 0)
 
+	logger.Log("Build %q pre-script: %q", b.Target, build.PreScript)
 	if build.PreScript != "" {
 		script, err := projectAct.RunScript{Name: build.PreScript}.Plan(ctx)
 		if err != nil {
@@ -36,7 +40,10 @@ func (b Build) Plan(ctx *context.Context) ([]patches.Patch, error) {
 		}
 		pchs = append(pchs, script...)
 	}
+
 	pchs = append(pchs, buildShell(build, ctx.ProjectDir)...)
+
+	logger.Log("Build %q post-script: %q", b.Target, build.PostScript)
 	if build.PostScript != "" {
 		script, err := projectAct.RunScript{Name: build.PostScript}.Plan(ctx)
 		if err != nil {
@@ -65,6 +72,7 @@ func appendListFlag(args []string, list []string, flag string, join string) []st
 }
 
 func buildShell(buildInfo *project.BuildInfo, wd string) []patches.Patch {
+	logger := logger.Get("BUILD SHELL")
 	patch := patches.ShellPatch{
 		WorkDir: wd,
 		Command: "go",
@@ -95,6 +103,7 @@ func buildShell(buildInfo *project.BuildInfo, wd string) []patches.Patch {
 		tempOut,
 		buildInfo.Input,
 	)
+	logger.Log("tempOut")
 	return []patches.Patch{
 		patch,
 		patches.MovePatch{

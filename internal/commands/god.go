@@ -5,6 +5,7 @@ import (
 
 	"github.com/80LK/godev/internal/meta"
 	"github.com/80LK/godev/internal/utils"
+	"github.com/80LK/godev/internal/utils/logger"
 	"github.com/spf13/cobra"
 )
 
@@ -29,5 +30,7 @@ var Root = &cobra.Command{
 }
 
 func init() {
-	Root.PersistentFlags().BoolVarP(&dryRun, "dry-run", "n", false, "run command without making any changes")
+	flags := Root.PersistentFlags()
+	flags.BoolVarP(&dryRun, "dry-run", "n", false, "run command without making any changes")
+	flags.BoolVarP(&logger.Enabled, "logger", "l", false, "enable logger")
 }
