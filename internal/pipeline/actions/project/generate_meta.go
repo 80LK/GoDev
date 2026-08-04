@@ -6,12 +6,12 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"text/template"
 
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/pipeline/patches"
 	"github.com/80LK/godev/internal/utils"
-	"github.com/pmezard/go-difflib/difflib"
 )
 
 //go:embed templates/meta
@@ -86,15 +86,11 @@ func (g GenerateMeta) Plan(ctx *context.Context) ([]patches.Patch, error) {
 			}
 		}
 
-		aLines := difflib.SplitLines(string(oldData))
-		bLines := difflib.SplitLines(string(data))
-
-		m := difflib.NewMatcher(aLines, bLines)
 		if g.ContextKey != "" {
-			context.Set(ctx, g.ContextKey, m.Ratio() != 1)
+			context.Set(ctx, g.ContextKey, !slices.Equal(oldData, data))
 		}
 
-		if m.Ratio() != 1 {
+		if !slices.Equal(oldData, data) {
 			ptchs = append(ptchs, patches.NewWriteFilePatch(target, oldData, data, 0777))
 		}
 	}
