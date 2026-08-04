@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/80LK/godev/internal/pipeline"
+	"github.com/80LK/godev/internal/pipeline/actions"
 	"github.com/80LK/godev/internal/pipeline/context"
 	"github.com/80LK/godev/internal/pipeline/patches"
 	"github.com/80LK/godev/project"
@@ -50,15 +50,28 @@ func (r RunScript) Plan(ctx *context.Context) ([]patches.Patch, error) {
 			return nil, fmt.Errorf("Not found script %q", r.Name)
 		}
 	}
-	pl := pipeline.New()
+	var pl actions.Executor
+	if script.Parallel {
+		pl = &actions.Parallel{}
+	} else {
+		pl = &actions.Pipeline{}
+	}
 	for _, name := range script.Scripts {
 		pl.Add(RunScript{Name: name})
 	}
 
-	ptchs, err := pl.Plan(ctx)
-	if err != nil {
-		return nil, err
-	}
+	pl.Add(_RunScript{Name: r.Name})
+
+	return pl.Plan(ctx)
+}
+
+type _RunScript struct {
+	Name string
+}
+
+func (r _RunScript) Plan(ctx *context.Context) ([]patches.Patch, error) {
+	script := ctx.GoProject.Scripts[r.Name]
+	ptchs := []patches.Patch{}
 
 	for _, childScript := range script.Commands {
 		patch, err := parseScriptInShellPatch(childScript, ctx.ProjectDir, script.AsScript())
@@ -73,8 +86,7 @@ func (r RunScript) Plan(ctx *context.Context) ([]patches.Patch, error) {
 		if err != nil {
 			return nil, err
 		}
-		return []patches.Patch{patch}, nil
+		ptchs = append(ptchs, patch)
 	}
-
 	return ptchs, nil
 }

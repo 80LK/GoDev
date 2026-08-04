@@ -16,11 +16,12 @@ func (r RootScript) AsScript() *Script {
 }
 
 type Script struct {
-	Command string   `modlike:"command,omitempty" json:"command,omitempty"`
-	Args    []string `modlike:"args" json:"args,omitempty"`
-	WorkDir string   `modlike:"workdir,omitempty" json:"workdir,omitempty"`
-	Env     []string `modlike:"env" json:"env,omitempty"`
-	Scripts []string `json:"scripts,omitempty"`
+	Command  string   `modlike:"command,omitempty" json:"command,omitempty"`
+	Args     []string `modlike:"args" json:"args,omitempty"`
+	WorkDir  string   `modlike:"workdir,omitempty" json:"workdir,omitempty"`
+	Env      []string `modlike:"env" json:"env,omitempty"`
+	Scripts  []string `json:"scripts,omitempty"`
+	Parallel bool     `json:"parallel,omitempty"`
 }
 
 type ScriptPhase string
