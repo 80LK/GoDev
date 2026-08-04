@@ -20,6 +20,7 @@ type Script struct {
 	Args    []string `modlike:"args" json:"args,omitempty"`
 	WorkDir string   `modlike:"workdir,omitempty" json:"workdir,omitempty"`
 	Env     []string `modlike:"env" json:"env,omitempty"`
+	Scripts []string `json:"scripts,omitempty"`
 }
 
 type ScriptPhase string
