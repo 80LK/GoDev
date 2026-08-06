@@ -25,13 +25,12 @@ func Release(opts DryRunOptions) error {
 		projectAct.InitProjectContext{},
 		projectAct.RunScript{IgnoreNotFound: true, Name: project.LifecycleName(project.PhaseBefore, "release")},
 		pipeline.New().Add(
-			projectAct.GenerateMeta{
-				ContextKey: "generated",
-			},
+			projectAct.GenerateMeta{},
+			gitAct.CheckClearGit{OutputKey: "git_clear"},
 			actions.ConditionAction{
 				Condition: func(ctx *context.Context) bool {
-					res, _ := context.Get[bool](ctx, "generated")
-					return res
+					res, _ := context.Get[bool](ctx, "git_clear")
+					return !res
 				},
 				Action: gitAct.GitCommit{Value: "generate meta info"},
 			},
