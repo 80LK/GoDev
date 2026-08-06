@@ -22,7 +22,7 @@ func (c CheckClearGit) Plan(ctx *context.Context) ([]patches.Patch, error) {
 		return nil, err
 	}
 
-	empty := len(bytes.TrimSpace(out)) != 0
+	empty := len(bytes.TrimSpace(out)) == 0
 	if c.OutputKey != "" {
 		context.Set(ctx, c.OutputKey, empty)
 	} else if !empty {
